@@ -37,4 +37,5 @@ public:
 	inline const sf::Window& getWindow() const  { return this->window;  }
 
 	inline const bool isFocused() const			{ return this->focused; }
+	inline const bool isOpen() const			{ return this->window.isOpen(); }
 };

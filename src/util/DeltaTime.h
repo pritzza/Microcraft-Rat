@@ -7,17 +7,18 @@
 class DeltaTime final
 {
 private:
-	sf::Clock m_clock;
+	sf::Clock clock;
 
-	double m_deltaTime{};			// time between each frame
-	double m_processingTime{};	// the time it takes to execute one gameloop excluding the wait/sleep
+	double deltaTime{};			// time between each frame
+	double processingTime{};	// the time it takes to execute one gameloop excluding the wait/sleep
 
-	double m_totalTime{};
+	double totalTime{};
 
 public:
 	void wait(const uint8_t frameRate);
 
-	inline const double getDT() const		{ return this->m_deltaTime;		 }
-	inline const double getPT() const		{ return this->m_processingTime; }
-	inline const double getTotal() const	{ return this->m_totalTime;		 }
+	inline const double getDT() const		{ return this->deltaTime;		 }
+	inline const double getPT() const		{ return this->processingTime;   }
+	inline const double getTotal() const	{ return this->totalTime;		 }
+	inline const double getFPS() const		{ return (deltaTime / processingTime) * (1.f / deltaTime); }
 };

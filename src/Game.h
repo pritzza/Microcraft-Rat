@@ -3,6 +3,7 @@
 #include <SFML/Window/WindowStyle.hpp>
 
 #include "gfx/Renderer.h"
+#include "gfx/SpriteSheet.h"
 
 #include "util/DeltaTime.h"
 #include "util/Window.h"
@@ -12,6 +13,8 @@ class Game
 private:
 	Window window;
 	Renderer renderer;
+	SpriteSheet sheet{"res/SpriteSheet.png"};
+
 	DeltaTime delta;
 
 	const uint8_t frameRate;

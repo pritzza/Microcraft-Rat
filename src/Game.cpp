@@ -1,5 +1,9 @@
 #include "Game.h"
 
+#include "gfx/ColorPalette.h"
+
+#include <iostream>
+
 Game::Game(
 	const uint16_t width, 
 	const uint16_t height, 
@@ -15,19 +19,22 @@ Game::Game(
 
 void Game::loop()
 {
-	this->renderer.testPalette();
+	renderer.testPalette();
 
-	//this->renderer.putPixel(2, Color{ 3, 4, 5 });
+	renderer.render(this->sheet, SpriteSheet::SpriteID::Sprite, { 35, 70, 80, 123 }, 1, 1);
 
-	while (this->isRunning)
+	while (isRunning)
 	{
-		this->window.update();
+		window.update();
 		
-		if (this->window.isFocused())
+		if (!window.isOpen())
+			stop();
+
+		else if (window.isFocused())
 		{
 			window.render(renderer.getBuffer());
 		}
 
-		this->delta.wait(this->frameRate);
+		delta.wait(frameRate);
 	}
 }
