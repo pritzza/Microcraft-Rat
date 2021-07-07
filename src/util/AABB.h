@@ -21,4 +21,17 @@ struct AABB
 		w{ w },
 		h{ h }
 	{}
+
+	inline static constexpr bool isPointInside(
+		const uint16_t px,	// point xy 
+		const uint16_t py,
+		const uint16_t sx,	// start xy
+		const uint16_t sy,
+		const uint16_t ex,	// end xy
+		const uint16_t ey
+	)
+	{
+		return px >= sx && px <= sx + ex &&
+			   py >= sy && py <= sy + ey;
+	}
 };

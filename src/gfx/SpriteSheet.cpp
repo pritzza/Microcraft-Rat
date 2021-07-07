@@ -7,6 +7,11 @@
 #include <iostream>
 #include <bitset>
 
+// this just in, ! is only the logical not operator
+// ~ is the bitwise not operator... thank god i decided not
+// to use a not operator otherwise i would've gotten an unexpected output
+// and would have never suspected this...
+
 SpriteSheet::SpriteSheet(const std::string& fileName)
 	:
 	data{}
@@ -22,7 +27,7 @@ void SpriteSheet::loadFromFile(const std::string& fileName)
 		std::cerr << "Could't open spritesheet: " << fileName << '\n';
 	else
 	{
-		assert(spriteSheetBuffer.getSize().x == SHEET_WIDTH);
+		assert(spriteSheetBuffer.getSize().x/PIXELS_PER_BYTE == SHEET_WIDTH);
 		assert(spriteSheetBuffer.getSize().y == SHEET_HEIGHT);
 
 		uint8_t imagePixel;
@@ -35,8 +40,6 @@ void SpriteSheet::loadFromFile(const std::string& fileName)
 		{
 			imagePixel = *(spriteSheetBuffer.getPixelsPtr() + (i * NUM_CHANNELS));	// could prolly optimize with i << 2
 
-			// we only care about the two leading bits
-			static constexpr uint8_t DETERMINING_BITS{ 0b1100'0000 };
 			const uint8_t shift = PIXEL_BIT_DEPTH * (i % PIXELS_PER_BYTE);
 
 			this->data[i/PIXELS_PER_BYTE] |= ((imagePixel & DETERMINING_BITS) >> shift);
@@ -47,4 +50,9 @@ void SpriteSheet::loadFromFile(const std::string& fileName)
 const Sprite& SpriteSheet::getSprite(const SpriteSheet::SpriteID s) const
 {
 	return this->SPRITES[static_cast<uint8_t>(s)];
+}
+
+const uint8_t SpriteSheet::getPixel(const uint16_t x, const uint16_t y, const uint8_t i) const
+{
+	return (this->data[x + (y * SHEET_WIDTH)] & (DETERMINING_BITS >> (i * PIXEL_BIT_DEPTH))) >> (((PIXELS_PER_BYTE - 1) - i) * PIXEL_BIT_DEPTH);
 }

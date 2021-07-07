@@ -2,7 +2,11 @@
 
 #include <string>
 
+#include "../util/Binary.h"
+
 #include "Sprite.h"
+
+class Renderer;
 
 // there is one sprite sheet that will always be stored during runtime
 // it will store all the sprite data for every sprite
@@ -12,10 +16,13 @@ class SpriteSheet
 private:
 	// because a uint8_t is 8 bits, and we only need 2 bits to store one pixel
 	// we can store 4 pixels in one uint8_t, so there are 4 pixels per element
-	static constexpr uint8_t BYTE{ 8 };
 	static constexpr uint8_t PIXEL_BIT_DEPTH{ 2 };	// takes 2 bits to store 1 pixel
 
-	static constexpr uint8_t PIXELS_PER_BYTE{ sizeof(uint8_t) * BYTE / PIXEL_BIT_DEPTH };	// we store data for 4 pixels every 1 uint8_t
+	static constexpr uint8_t PIXELS_PER_BYTE{ sizeof(uint8_t) * Binary::BYTE / PIXEL_BIT_DEPTH };	// we store data for 4 pixels every 1 uint8_t
+
+	// we only care about the two leading bits
+	// only used in sprite rendering and parsing spritesheet file
+	static constexpr uint8_t DETERMINING_BITS{ 0b1100'0000 };
 
 	static constexpr uint16_t SHEET_HEIGHT{ 256 };	// sprite sheet is 256x256 px (square)
 	static constexpr uint16_t SHEET_WIDTH{ SHEET_HEIGHT / PIXELS_PER_BYTE };
@@ -26,13 +33,13 @@ private:
 private:
 	enum Coords
 	{
-		SPRITE_X = 0 * SPRITE_LENGTH,
+		SPRITE_X = 1 * SPRITE_LENGTH,
 		SPRITE_Y = 0 * SPRITE_LENGTH,
 	};
 	enum Dimensions
 	{
-		SPRITE_W = 3 * SPRITE_LENGTH,
-		SPRITE_H = 3 * SPRITE_LENGTH,
+		SPRITE_W = 2 * SPRITE_LENGTH,
+		SPRITE_H = 2 * SPRITE_LENGTH,
 	};
 	static constexpr Sprite SPRITES[]
 	{
@@ -57,6 +64,13 @@ public:
 	SpriteSheet(const std::string& fileName);
 
 	const Sprite& getSprite(const SpriteSheet::SpriteID s) const;
-	const uint8_t* const getData() const { return this->data; }
-	const uint16_t getWidth() const { return this->SHEET_WIDTH; }
+	
+	//inline const uint8_t getPixel(const uint16_t x, const uint16_t y) const { return this->data[x + (y * SHEET_WIDTH)]; }
+	const uint8_t getPixel(const uint16_t x, const uint16_t y, const uint8_t i) const;
+
+	inline const uint8_t* const getData() const		   { return this->data;		 }
+
+	inline static constexpr uint16_t getHeight()	   { return SHEET_HEIGHT;	 }
+	inline static constexpr uint16_t getWidth()		   { return SHEET_WIDTH;	 }
+	inline static constexpr uint8_t getPixelsPerByte() { return PIXELS_PER_BYTE; }
 };

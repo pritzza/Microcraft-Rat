@@ -19,21 +19,27 @@ Game::Game(
 
 void Game::loop()
 {
-	renderer.testPalette();
-
-	renderer.render(this->sheet, SpriteSheet::SpriteID::Sprite, { 35, 70, 80, 123 }, 1, 1);
+	uint8_t x{};
 
 	while (isRunning)
 	{
 		window.update();
 		
-		if (!window.isOpen())
-			stop();
-
-		else if (window.isFocused())
+		if (window.isOpen())
 		{
-			window.render(renderer.getBuffer());
+			if (window.isFocused())
+			{
+				renderer.testPalette();
+				renderer.render(this->sheet, SpriteSheet::SpriteID::Sprite, 69, 69, ColorPalette(renderer, 224, true));
+				renderer.putPixel(x, 0, { 0,0,0 });
+
+				++x;
+
+				window.render(renderer.getBuffer());
+			}
 		}
+		else
+			stop();
 
 		delta.wait(frameRate);
 	}

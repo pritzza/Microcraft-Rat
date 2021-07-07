@@ -2,6 +2,8 @@
 
 #include "ColorPalette.h"
 
+#include "../util/AABB.h"
+
 #include <limits>
 #include <cassert>
 
@@ -17,26 +19,39 @@ Renderer::Renderer(const uint16_t width, const uint16_t height)
 	generateColorPalette();
 }
 
-void Renderer::render(const SpriteSheet& sheet, const SpriteSheet::SpriteID id, const ColorPalette& cp, const uint16_t x, const uint16_t y)
+void Renderer::render(const SpriteSheet& sheet, const SpriteSheet::SpriteID id, const uint16_t x, const uint16_t y, const ColorPalette& cp, const RenderFlag rf)
 {
 	const Sprite& s{ sheet.getSprite(id) };
 
+	const bool xFlip = static_cast<uint8_t>( rf ) & static_cast<uint8_t>( RenderFlag::FLIP_X );
+	const bool yFlip = static_cast<uint8_t>( rf ) & static_cast<uint8_t>( RenderFlag::FLIP_Y );
+
+	// xy is offset of where sprite is being drawn on the buffer
+	// ixy is the coord of the spritesheet pixel iterator
 	for (uint8_t ix = 0; ix < s.w; ++ix)
 		for (uint8_t iy = 0; iy < s.h; ++iy)
 		{
-			this->putPixel(
-				x + ix, 
-				y + iy, 
-				*(cp.getColors() + ( (sheet.getData()[s.w + ix + ((s.y + iy) * sheet.getWidth())] & 0b1100'0000) >> ix % 4) )
-				// suprise, this doesnt work
-			);
+			// current pixel's spritesheet x y pos
+			const uint8_t shx = (xFlip ? (s.x + s.w - ix - 1) : s.x + ix) / SpriteSheet::getPixelsPerByte();
+
+			const uint8_t shy = (yFlip ? (s.y + s.h - iy - 1) : s.y + iy);
+			{
+				this->putPixel(
+					x + ix,
+					y + iy,
+					cp.getColors()
+					[
+						(sheet.getPixel(shx, shy, (0 + ix) % SpriteSheet::getPixelsPerByte()))
+					]
+				);
+			}
 		}
 }
 
 void Renderer::generateColorPalette()
 {
-	const uint8_t min{ Color::getMinValue() };
-	const uint8_t max{ Color::getMaxValue() };
+	static constexpr uint8_t min{ Color::getMinValue() };
+	static constexpr uint8_t max{ Color::getMaxValue() };
 
 	// iterate through every rgb value and put it in the master colorPalette
 	for (int r = min; r <= max; ++r)
@@ -44,7 +59,7 @@ void Renderer::generateColorPalette()
 			for (int b = min; b <= max; ++b)
 				this->colorPalette[paletteUsed++].setData(r, g, b);
 
-	// for transparency, we will make the last pixel of the 
+	// for transparency, we will make the last pixel of the palette the designated clear px
 	this->colorPalette[TRANSPARENT_COLOR_INDEX].makeTransparent();
 }
 
@@ -56,9 +71,19 @@ void Renderer::putPixel(const uint16_t i, const Color c)
 	this->putPixel(x, y, c);
 }
 
+void Renderer::putPixel(const uint16_t i, const uint8_t colorIndex)
+{
+	this->putPixel(i, this->colorPalette[colorIndex]);
+}
+
+void Renderer::putPixel(const uint16_t x, const uint16_t y, const uint8_t colorIndex)
+{
+	this->putPixel(x, y, this->colorPalette[colorIndex]);
+}
+
 void Renderer::putPixel(const uint16_t x, const uint16_t y, const Color c)
 {
-	if (!c.isTransparent())
+	if (!c.isTransparent() && AABB::isPointInside(x, y, 0, 0, bufferWidth, bufferHeight))
 	{
 		static constexpr uint8_t NORMAL_COLOR_MAX{ std::numeric_limits<uint8_t>::max() };
 
@@ -90,4 +115,13 @@ void Renderer::testPalette()
 	{
 		this->putPixel(i, this->colorPalette[i % (PALETTE_SIZE - (i % (DISTORTION + 1)))]);
 	}
+}
+
+const int Renderer::getPaletteIndex(const Color& c) const
+{
+	static constexpr uint8_t CR{ Color::getColorRange() };
+
+	// when we generate the color palette, its a triple for loop going r g b
+	// this is kinda how we reverse engineer the indices of the color palette
+	return (c.getRed() * CR * CR) + (c.getGreen() * CR) + c.getBlue();
 }

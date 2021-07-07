@@ -1,0 +1,9 @@
+TODO:
+sprite animations
+terrain generation
+level/world class
+entity component system
+text sprites
+refactor everything
+implement saturationRange in ColorPalette()
+art

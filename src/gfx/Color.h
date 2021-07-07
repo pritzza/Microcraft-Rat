@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../util/Clamp.h"
+#include "../util/Binary.h"
 
 #include <cstdint>
 
@@ -14,18 +15,22 @@ private:
 	// each color channel can have 6 different values
 	// 6 x 6 x 6 = 216 possible colors
 	static constexpr uint8_t COLOR_RANGE{ (MAX_VAL - MIN_VAL) + 1 };
-	static constexpr uint8_t CHANNEL_BIT_DEPTH{ 4 };	// need to find a way to calculate this
-	// you can represent the value 6 using 4 bits though
-
-	static constexpr uint8_t BYTE{ 8 };	// should move this elsewhere, but 8 bits in a byte
+	static constexpr uint8_t CHANNEL_BIT_DEPTH{ Binary::calculateBitDepth(COLOR_RANGE) + 1 };
+	// + 1 because when designing this earlier i was using 4 bits and now im too lazy to chance
+	// you can represent the value 6 using 3* bits though
 
 	static constexpr uint8_t RED_OFFSET  { CHANNEL_BIT_DEPTH * 0 };
 	static constexpr uint8_t GREEN_OFFSET{ CHANNEL_BIT_DEPTH * 1 };
 	static constexpr uint8_t BLUE_OFFSET { CHANNEL_BIT_DEPTH * 2 };
 
+	// arbitrary set of bits that represent transparency
 	static constexpr uint16_t TRANSPARENT{ 0b1111'0000'0000'0000 };
 
 private:
+	// CORRECTION: you can actually use 3 bits per channel to
+	// 	   repreesnt 6 different states, so imagine this but with
+	// 	   3 bits per channel instead
+	// 
 	// we will store out color data in 16 bytes
 	// bitmap for data will look something like this
 	//		B    G	  R
@@ -44,10 +49,10 @@ private:
 	{
 		value = clamp(value, MIN_VAL, MAX_VAL);
 
-		// shift data so the 4 bit channel we want to edit are are the beginning
-		// overwrite first 4 bits with 0s
-		// insert the value into the first 4 bits of data
-		// shift everything back
+		// shift data so its bits are at the beginning		// so its easier to work with
+		// overwrite the first 4 bits with 0s				// to clear any prev data
+		// insert the value into the first 4 bits of data	// putting the new data in
+		// shift everything back							// to restore bitset/map form
 		data = (((data >> offset) & 0b1111'1111'1111'0000) | value) << offset;
 	}
 
@@ -70,7 +75,7 @@ public:
 	inline const uint8_t getGreen() const { return (this->data >> GREEN_OFFSET) & 0b0000'0000'0000'1111; }
 	inline const uint8_t getBlue() const  { return (this->data >> BLUE_OFFSET)  & 0b0000'0000'0000'1111; }
 
-	inline const static uint8_t getColorRange() { return COLOR_RANGE; }
-	inline const static uint8_t getMinValue()	{ return MIN_VAL;	  }
-	inline const static uint8_t getMaxValue()	{ return MAX_VAL;     }
+	inline constexpr static uint8_t getColorRange() { return COLOR_RANGE; }
+	inline constexpr static uint8_t getMinValue()	{ return MIN_VAL;	  }
+	inline constexpr static uint8_t getMaxValue()	{ return MAX_VAL;     }
 };

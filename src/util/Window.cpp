@@ -4,7 +4,7 @@
 
 Window::Window(const uint16_t width, const uint16_t height, const std::string& name, const int style)
     :
-    window{ sf::VideoMode(width, height, 16), name, sf::Style::Close },
+    window{ sf::VideoMode(width, height, 16), name, sf::Style::Default | sf::Style::Resize },
     width{ width },
     height{ height }
 {

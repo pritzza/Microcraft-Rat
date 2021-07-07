@@ -11,6 +11,14 @@
 
 class ColorPalette;
 
+enum class RenderFlag
+{
+	NONE	  = 0b00,
+	FLIP_X	  = 0b01,
+	FLIP_Y	  = 0b10,
+	FLIP_BOTH = FLIP_X | FLIP_Y
+};
+
 class Renderer
 {
 private:
@@ -24,6 +32,8 @@ private:
 	const uint16_t bufferHeight;
 	const uint16_t bufferSize;
 
+	// we store the entire color palette in memory here,
+	// but we could also just not and figure out colors at runtime
 	std::array<Color, PALETTE_SIZE> colorPalette;
 	uint8_t paletteUsed{};
 
@@ -33,19 +43,31 @@ private:
 public:
 	Renderer(const uint16_t width, const uint16_t height);
 
-	void render(const SpriteSheet& sheet, const SpriteSheet::SpriteID id, const ColorPalette& cp, const uint16_t x, const uint16_t y);
+	void render(
+		const SpriteSheet& sheet, 
+		const SpriteSheet::SpriteID id, 
+		const uint16_t x, 
+		const uint16_t y,
+		const ColorPalette& cp, 
+		const RenderFlag rf = RenderFlag::NONE
+		);
 	 
 	// put a pixel on the image buffer
-	void putPixel(const uint16_t bufferIndex, const uint8_t paletteIndex);
+	//void putPixel(const uint16_t bufferIndex, const uint8_t paletteIndex);
 	void putPixel(const uint16_t i, const Color c);
+	void putPixel(const uint16_t i, const uint8_t colorIndex);
 	void putPixel(const uint16_t x, const uint16_t, const Color c);
+	void putPixel(const uint16_t x, const uint16_t, const uint8_t colorIndex);
 
 	void testPalette();
 
-	const std::array<Color, PALETTE_SIZE> getColorPalette() const;
-
-	const Color getPaletteColor(const uint16_t i) const;
-	const Color getPaletteColor(const uint8_t x, const uint8_t y) const;
+	//const std::array<Color, PALETTE_SIZE> getColorPalette() const;
+	//
+	inline const Color getPaletteColor(const uint16_t i) const { return this->colorPalette[i]; }
+	const int getPaletteIndex(const Color& c) const;
 
 	inline const sf::Image& getBuffer() const { return this->buffer; }
+
+	inline static constexpr uint8_t getTransparentColor() { return TRANSPARENT_COLOR_INDEX; }
+
 };
