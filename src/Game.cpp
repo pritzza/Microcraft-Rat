@@ -21,6 +21,8 @@ void Game::loop()
 {
 	uint8_t x{};
 
+	this->level.generateWorld();
+
 	while (isRunning)
 	{
 		window.update();
@@ -32,6 +34,8 @@ void Game::loop()
 				renderer.testPalette();
 				renderer.render(this->sheet, SpriteSheet::SpriteID::Sprite, 69, 69, ColorPalette(renderer, 224, true));
 				renderer.putPixel(x, 0, { 0,0,0 });
+
+				renderer.render(this->sheet, this->level);
 
 				++x;
 

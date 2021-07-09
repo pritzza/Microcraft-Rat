@@ -3,7 +3,7 @@
 #include "Color.h"
 #include "Renderer.h"
 
-#include "../util/Clamp.h"
+#include "../util/Math.h"
 
 #include <cmath>
 
@@ -65,9 +65,9 @@ const uint8_t ColorPalette::parseIntColorToIndex(const uint16_t color) const
 
 	const bool	  a = color >= TRANSPARENT_THRESHOLD;
 
-	const uint8_t r = clamp( ((color % 1000) / 100), Color::getMinValue(), Color::getMaxValue());
-	const uint8_t g = clamp( ((color % 100 ) / 10 ), Color::getMinValue(), Color::getMaxValue());
-	const uint8_t b = clamp( ((color % 10  ) / 1  ), Color::getMinValue(), Color::getMaxValue());
+	const uint8_t r = Math::clamp( ((color % 1000) / 100), Color::getMinValue(), Color::getMaxValue());
+	const uint8_t g = Math::clamp( ((color % 100 ) / 10 ), Color::getMinValue(), Color::getMaxValue());
+	const uint8_t b = Math::clamp( ((color % 10  ) / 1  ), Color::getMinValue(), Color::getMaxValue());
 
 	if (a)
 		return Renderer::getTransparentColor();

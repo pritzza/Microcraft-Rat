@@ -32,6 +32,6 @@ struct AABB
 	)
 	{
 		return px >= sx && px <= sx + ex &&
-			   py >= sy && py <= sy + ey;
+			py >= sy && py <= sy + ey;
 	}
 };

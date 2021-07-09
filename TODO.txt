@@ -1,9 +1,13 @@
 TODO:
 sprite animations
 terrain generation
-level/world class
+~ level/world class
 entity component system
 text sprites
 refactor everything
+	- create 2d vector class and integrate it everywhere
 implement saturationRange in ColorPalette()
 art
++ make World::chunks unorderedmap compatible with my Vec2i
+fix Random
+create a constant length for all tile sprites in SH

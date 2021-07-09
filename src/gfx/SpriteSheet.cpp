@@ -5,7 +5,6 @@
 #include <cassert>
 
 #include <iostream>
-#include <bitset>
 
 // this just in, ! is only the logical not operator
 // ~ is the bitwise not operator... thank god i decided not

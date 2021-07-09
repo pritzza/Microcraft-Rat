@@ -3,6 +3,9 @@
 #include "ColorPalette.h"
 
 #include "../util/AABB.h"
+#include "../util/Vector.h"
+
+#include "../level/Level.h"
 
 #include <limits>
 #include <cassert>
@@ -48,6 +51,39 @@ void Renderer::render(const SpriteSheet& sheet, const SpriteSheet::SpriteID id, 
 		}
 }
 
+void Renderer::render(const SpriteSheet& sheet, const Chunk& chunk, const Vec2i& coords)
+{
+	for (int i = 0; i < Chunk::getSize(); ++i)
+	{
+		// tiny abbreviations
+		static constexpr int CHUNK_LEN{ Chunk::getLength() };
+
+		const SpriteSheet::SpriteID& tileSpriteID{ chunk.getTile(i).spriteID };
+		const ColorPalette& tileColorPalette{ chunk.getTile(i).colorPalette };
+
+		// write a constant somewhere that makes the size of all tiles the same
+		const uint8_t tileLen{ sheet.getSprite(tileSpriteID).w };
+
+		const Vec2i& pos{ 
+			(Vec2i::toVector(i, CHUNK_LEN, CHUNK_LEN).x * tileLen) + (coords.x * CHUNK_LEN),
+			(Vec2i::toVector(i, CHUNK_LEN, CHUNK_LEN).y * tileLen) + (coords.y * CHUNK_LEN)
+		};
+
+		this->render(sheet, tileSpriteID, pos.x, pos.y, tileColorPalette);
+	}
+}
+
+void Renderer::render(const SpriteSheet& sheet, const World& world)
+{
+	for (const auto& [coords, chunk] : world.getChunks())
+		this->render(sheet, chunk, coords);
+}
+
+void Renderer::render(const SpriteSheet& sheet, const Level& level)
+{
+	this->render(sheet, level.getWorld());
+}
+
 void Renderer::generateColorPalette()
 {
 	static constexpr uint8_t min{ Color::getMinValue() };
@@ -65,6 +101,7 @@ void Renderer::generateColorPalette()
 
 void Renderer::putPixel(const uint16_t i, const Color c)
 {
+	//const int x{ Vector2::toVectorX(i, bufferWidth, bufferHeight) };
 	const uint16_t x = i % bufferWidth;
 	const uint16_t y = i / bufferWidth;
 

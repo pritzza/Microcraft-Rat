@@ -8,6 +8,8 @@
 #include "util/DeltaTime.h"
 #include "util/Window.h"
 
+#include "level/Level.h"
+
 class Game
 {
 private:
@@ -16,6 +18,8 @@ private:
 	SpriteSheet sheet{"res/SpriteSheet.png"};
 
 	DeltaTime delta;
+
+	Level level;
 
 	const uint8_t frameRate;
 	bool isRunning;

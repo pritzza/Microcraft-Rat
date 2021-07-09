@@ -33,17 +33,28 @@ private:
 private:
 	enum Coords
 	{
+		// demo sprite
 		SPRITE_X = 1 * SPRITE_LENGTH,
 		SPRITE_Y = 0 * SPRITE_LENGTH,
+
+		// ground tile
+		GROUND_X = 0 * SPRITE_LENGTH,
+		GROUND_Y = 4 * SPRITE_LENGTH,
 	};
 	enum Dimensions
 	{
+		// demo sprite
 		SPRITE_W = 2 * SPRITE_LENGTH,
 		SPRITE_H = 2 * SPRITE_LENGTH,
+
+		// GROUND tile
+		GROUND_W = 1 * SPRITE_LENGTH,
+		GROUND_H = 1 * SPRITE_LENGTH,
 	};
 	static constexpr Sprite SPRITES[]
 	{
 		{ SPRITE_X, SPRITE_Y, SPRITE_W, SPRITE_H },	// 0
+		{ GROUND_X, GROUND_Y, GROUND_W, GROUND_H },	// 0
 	};
 	
 	static constexpr uint16_t NUM_SPRITES{ sizeof(SPRITES) / sizeof(Sprite) };
@@ -51,7 +62,8 @@ private:
 public:
 	enum class SpriteID
 	{
-		Sprite	// 0
+		Sprite,		// 0
+		GroundTile,	// 1
 	};
 
 private:
@@ -65,7 +77,7 @@ public:
 
 	const Sprite& getSprite(const SpriteSheet::SpriteID s) const;
 	
-	//inline const uint8_t getPixel(const uint16_t x, const uint16_t y) const { return this->data[x + (y * SHEET_WIDTH)]; }
+	// returns 2 bit pixel at index of xy coord
 	const uint8_t getPixel(const uint16_t x, const uint16_t y, const uint8_t i) const;
 
 	inline const uint8_t* const getData() const		   { return this->data;		 }

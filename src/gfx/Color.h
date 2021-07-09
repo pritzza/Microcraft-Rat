@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../util/Clamp.h"
 #include "../util/Binary.h"
 
 #include <cstdint>
@@ -47,7 +46,7 @@ private:
 	
 	inline void setChannel(uint8_t value, const uint8_t offset) 
 	{
-		value = clamp(value, MIN_VAL, MAX_VAL);
+		value = Math::clamp(value, MIN_VAL, MAX_VAL);
 
 		// shift data so its bits are at the beginning		// so its easier to work with
 		// overwrite the first 4 bits with 0s				// to clear any prev data

@@ -10,6 +10,10 @@
 #include "SpriteSheet.h"
 
 class ColorPalette;
+struct Vec2i;
+struct Chunk;
+class Level;
+class World;
 
 enum class RenderFlag
 {
@@ -51,6 +55,10 @@ public:
 		const ColorPalette& cp, 
 		const RenderFlag rf = RenderFlag::NONE
 		);
+
+	void render(const SpriteSheet& sheet, const Chunk& chunk, const Vec2i& coords);
+	void render(const SpriteSheet& sheet, const World& world);
+	void render(const SpriteSheet& sheet, const Level& level);
 	 
 	// put a pixel on the image buffer
 	//void putPixel(const uint16_t bufferIndex, const uint8_t paletteIndex);
