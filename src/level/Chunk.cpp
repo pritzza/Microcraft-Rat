@@ -1,14 +1,17 @@
 #include "Chunk.h"
 
+#include "../util/Random.h"
+
 Chunk::Chunk()
 {
+	Random rng;
+
 	// default initialize tileData to grass so we never have any nullptr nonsense
 	for (int i = 0; i < this->SIZE; ++i)
 	{
-		if (i%3)
-			this->setTile(i, Tiles::Grass);
-		else
-			this->setTile(i, Tiles::Stone);
+		this->setTile(i, Tiles::getTile(static_cast<Tiles::TileID>(
+			rng.getNum(0, static_cast<int>(Tiles::TileID::NumTiles) - 1
+			))	));
 	}
 }
 
@@ -47,6 +50,13 @@ const Tile& Chunk::getTile(const uint16_t i) const
 const Tile& Chunk::getTile(const uint8_t x, const uint8_t y) const
 {
 	return getTile(x + (y * LENGTH));
+}
+
+const TileCrop Chunk::getTileCrop(const Vec2i& pos)
+{
+	return TileCrop::MiddleMiddle;
+
+	//const Tiles::TileID tileID{ this->getTile(pos.x, pos.y) };
 }
 
 //const Structure Chunk::getStructure(const uint16_t i) const

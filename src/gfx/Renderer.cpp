@@ -1,11 +1,12 @@
 #include "Renderer.h"
 
-#include "ColorPalette.h"
+#include "color/ColorPalette.h"
 
 #include "../util/AABB.h"
 #include "../util/Vector.h"
 
 #include "../level/Level.h"
+#include "../level/Tiles.h"
 
 #include <limits>
 #include <cassert>
@@ -16,15 +17,18 @@ Renderer::Renderer(const uint16_t width, const uint16_t height)
 	:
 	bufferWidth( width ),
 	bufferHeight( height ),
-	bufferSize( width * height )
+	bufferSize( width * height ),
+	camera{ *this }
 {
-	this->buffer.create(width, height, sf::Color(123,123,123));
+	static const sf::Color DEFAULT_BUFFER_COLOR{ 123,123,123 };
+	this->buffer.create(width, height, DEFAULT_BUFFER_COLOR);
 	generateColorPalette();
 }
 
 void Renderer::render(const SpriteSheet& sheet, const SpriteSheet::SpriteID id, const uint16_t x, const uint16_t y, const ColorPalette& cp, const RenderFlag rf)
 {
 	const Sprite& s{ sheet.getSprite(id) };
+	//std::cout << static_cast<int>(id) << ": " << (int)s.h << '\n';
 
 	const bool xFlip = static_cast<uint8_t>( rf ) & static_cast<uint8_t>( RenderFlag::FLIP_X );
 	const bool yFlip = static_cast<uint8_t>( rf ) & static_cast<uint8_t>( RenderFlag::FLIP_Y );
@@ -36,19 +40,29 @@ void Renderer::render(const SpriteSheet& sheet, const SpriteSheet::SpriteID id, 
 		{
 			// current pixel's spritesheet x y pos
 			const uint8_t shx = (xFlip ? (s.x + s.w - ix - 1) : s.x + ix) / SpriteSheet::getPixelsPerByte();
-
 			const uint8_t shy = (yFlip ? (s.y + s.h - iy - 1) : s.y + iy);
-			{
-				this->putPixel(
-					x + ix,
-					y + iy,
-					cp.getColors()
-					[
-						(sheet.getPixel(shx, shy, (0 + ix) % SpriteSheet::getPixelsPerByte()))
-					]
-				);
-			}
+
+			this->putPixel(
+				(x + ix) - this->camera.getPos().x,
+				(y + iy) - this->camera.getPos().y,
+				cp.getColors()
+				[
+					(sheet.getPixel(shx, shy, (0 + ix) % SpriteSheet::getPixelsPerByte()))
+				]
+			);
 		}
+}
+
+void Renderer::render
+(
+	const SpriteSheet& sheet, 
+	const SpriteSheet::SpriteID id,
+	const Vec2i crop, 
+	const Vec2i& coords, 
+	const ColorPalette& cp, 
+	const RenderFlag rf
+)
+{
 }
 
 void Renderer::render(const SpriteSheet& sheet, const Chunk& chunk, const Vec2i& coords)
@@ -64,10 +78,13 @@ void Renderer::render(const SpriteSheet& sheet, const Chunk& chunk, const Vec2i&
 		// write a constant somewhere that makes the size of all tiles the same
 		const uint8_t tileLen{ sheet.getSprite(tileSpriteID).w };
 
-		const Vec2i& pos{ 
-			(Vec2i::toVector(i, CHUNK_LEN, CHUNK_LEN).x * tileLen) + (coords.x * CHUNK_LEN),
-			(Vec2i::toVector(i, CHUNK_LEN, CHUNK_LEN).y * tileLen) + (coords.y * CHUNK_LEN)
-		};
+		// tile is drawn in accordance to its position within its chunk, and that respective
+		// chunks position in the world
+
+		const Vec2i chunkOffset{ coords * tileLen * CHUNK_LEN};
+		const Vec2i tileOffset{ Vec2i::toVector(i, CHUNK_LEN, CHUNK_LEN) * tileLen };
+
+		const Vec2i& pos{ chunkOffset + tileOffset };
 
 		this->render(sheet, tileSpriteID, pos.x, pos.y, tileColorPalette);
 	}
@@ -88,6 +105,8 @@ void Renderer::generateColorPalette()
 {
 	static constexpr uint8_t min{ Color::getMinValue() };
 	static constexpr uint8_t max{ Color::getMaxValue() };
+
+	int paletteUsed{};
 
 	// iterate through every rgb value and put it in the master colorPalette
 	for (int r = min; r <= max; ++r)
@@ -120,7 +139,7 @@ void Renderer::putPixel(const uint16_t x, const uint16_t y, const uint8_t colorI
 
 void Renderer::putPixel(const uint16_t x, const uint16_t y, const Color c)
 {
-	if (!c.isTransparent() && AABB::isPointInside(x, y, 0, 0, bufferWidth, bufferHeight))
+	if (!c.isTransparent() && AABB::isPointInside(x, y, 0, 0, bufferWidth-1, bufferHeight-1))
 	{
 		static constexpr uint8_t NORMAL_COLOR_MAX{ std::numeric_limits<uint8_t>::max() };
 

@@ -4,7 +4,7 @@
 
 struct AABB
 {
-	uint8_t x, y, w, h;
+	int x, y, w, h;
 
 	AABB()
 		:
@@ -14,7 +14,7 @@ struct AABB
 		h{ 8 }
 	{}
 
-	AABB(const uint8_t x, const uint8_t y, const uint8_t w, const uint8_t h)
+	AABB(const int x, const int y, const int w, const int h)
 		:
 		x{ x },
 		y{ y },
@@ -22,16 +22,30 @@ struct AABB
 		h{ h }
 	{}
 
-	inline static constexpr bool isPointInside(
-		const uint16_t px,	// point xy 
-		const uint16_t py,
-		const uint16_t sx,	// start xy
-		const uint16_t sy,
-		const uint16_t ex,	// end xy
-		const uint16_t ey
+	inline const bool isColliding(const AABB& other) const
+	{
+		return x	 <= other.x + other.w &&
+			   x + w >= other.x			  &&
+			   y	 <= other.y + other.h &&
+			   y + h >= other.y;
+	}
+
+	inline static constexpr bool collide(const AABB& a, const AABB& b)
+	{										// from jdh
+		return a.x		 <= b.x + b.w &&	// this.minX <= other.maxX &&
+			   a.x + a.w >= b.x		  &&	// this.maxX >= other.minX &&
+			   a.y		 <= b.y + b.h &&	// this.minY <= other.maxY &&
+			   a.y + a.h >= b.y;			// this.maxY >= other.minY;
+	}
+
+	inline static constexpr bool isPointInside
+	(
+		const int px, const int py,
+		const int sx, const int sy,
+		const int ex, const int ey
 	)
 	{
 		return px >= sx && px <= sx + ex &&
-			py >= sy && py <= sy + ey;
+			   py >= sy && py <= sy + ey;
 	}
 };

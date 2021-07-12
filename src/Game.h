@@ -3,7 +3,7 @@
 #include <SFML/Window/WindowStyle.hpp>
 
 #include "gfx/Renderer.h"
-#include "gfx/SpriteSheet.h"
+#include "gfx/sprite/SpriteSheet.h"
 
 #include "util/DeltaTime.h"
 #include "util/Window.h"

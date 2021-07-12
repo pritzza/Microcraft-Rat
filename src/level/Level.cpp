@@ -2,5 +2,5 @@
 
 void Level::generateWorld()
 {
-	this->world.loadChunk( Vec2i{ 1, 1 } );
+	this->world.loadChunk( Vec2i{ 0, 0 } );
 }

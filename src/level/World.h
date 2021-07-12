@@ -13,7 +13,10 @@ class World
 {
 private:
 	std::unordered_map<Vec2i, Chunk, Vec2iUtil> chunks;
-	//Random rng;
+	Random rng;
+
+	int terrainSeed;		// seed responsible for the terrain generation
+	int tileFlavoringSeed;	// seed responsible for the flavors of tiles
 
 public:
 	void loadChunk(const Vec2i& pos);

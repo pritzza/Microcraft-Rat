@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-#include "SpriteSheet.h"
+#include "../sprite/SpriteSheet.h"
 
 class Renderer;
 

@@ -1,9 +1,9 @@
 #include "ColorPalette.h"
 
 #include "Color.h"
-#include "Renderer.h"
+#include "../Renderer.h"
 
-#include "../util/Math.h"
+#include "../../util/Math.h"
 
 #include <cmath>
 

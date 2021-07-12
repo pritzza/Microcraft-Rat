@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "../util/Binary.h"
+#include "../../util/Binary.h"
 
 #include "Sprite.h"
 
@@ -28,6 +28,7 @@ private:
 	static constexpr uint16_t SHEET_WIDTH{ SHEET_HEIGHT / PIXELS_PER_BYTE };
 	static constexpr uint16_t SHEET_SIZE{ SHEET_WIDTH * SHEET_HEIGHT };
 
+	// each sprite's location in the spritesheet and its dimensions are a factor of this number
 	static constexpr uint8_t SPRITE_LENGTH{ 8 };	// px; used for locating and cropping sprites
 
 private:
@@ -39,7 +40,7 @@ private:
 
 		// ground tile
 		GROUND_X = 0 * SPRITE_LENGTH,
-		GROUND_Y = 4 * SPRITE_LENGTH,
+		GROUND_Y = 3 * SPRITE_LENGTH,
 	};
 	enum Dimensions
 	{
@@ -47,14 +48,14 @@ private:
 		SPRITE_W = 2 * SPRITE_LENGTH,
 		SPRITE_H = 2 * SPRITE_LENGTH,
 
-		// GROUND tile
+		// Ground Tile (should have seame length)
 		GROUND_W = 1 * SPRITE_LENGTH,
 		GROUND_H = 1 * SPRITE_LENGTH,
 	};
 	static constexpr Sprite SPRITES[]
 	{
 		{ SPRITE_X, SPRITE_Y, SPRITE_W, SPRITE_H },	// 0
-		{ GROUND_X, GROUND_Y, GROUND_W, GROUND_H },	// 0
+		{ GROUND_X, GROUND_Y, GROUND_W, GROUND_H },	// 1
 	};
 	
 	static constexpr uint16_t NUM_SPRITES{ sizeof(SPRITES) / sizeof(Sprite) };

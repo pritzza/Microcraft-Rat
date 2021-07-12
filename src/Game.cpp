@@ -1,6 +1,6 @@
 #include "Game.h"
 
-#include "gfx/ColorPalette.h"
+#include "gfx/color/ColorPalette.h"
 
 #include <iostream>
 
@@ -31,6 +31,7 @@ void Game::loop()
 		{
 			if (window.isFocused())
 			{
+				//renderer.getCamera().centerOn(Vec2i{ x, 0 });
 				renderer.testPalette();
 				renderer.render(this->sheet, SpriteSheet::SpriteID::Sprite, 69, 69, ColorPalette(renderer, 224, true));
 				renderer.putPixel(x, 0, { 0,0,0 });

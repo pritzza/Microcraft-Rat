@@ -5,10 +5,12 @@
 
 #include "Tiles.h"
 
+struct Vec2i;
+
 struct Chunk
 {
 public:
-	static constexpr uint8_t LENGTH{ 16 };
+	static constexpr uint8_t LENGTH{ 8 };
 	static constexpr uint16_t SIZE{ LENGTH * LENGTH };
 
 public:
@@ -31,6 +33,8 @@ public:
 
 	//const Structure& getStructure(const uint16_t i) const;
 	//const Structure& getStructure(const uint8_t x, const uint8_t y) const;
+
+	const TileCrop getTileCrop(const Vec2i& pos);
 
 	inline static constexpr int getLength() { return LENGTH; }
 	inline static constexpr int getSize()	{ return SIZE;	 }
