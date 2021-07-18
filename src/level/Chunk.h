@@ -7,6 +7,9 @@
 
 struct Vec2i;
 
+// simple data structure to store "chunks" of tiles/tileIDs in LEN*LEN sized array
+
+// when uncommenting stuff about structures, be sure to update them to be the same as tiles
 struct Chunk
 {
 public:
@@ -14,27 +17,25 @@ public:
 	static constexpr uint16_t SIZE{ LENGTH * LENGTH };
 
 public:
-	const Tile* tileData[SIZE];
+	Tiles::TileID tileData[SIZE];
 	//Structure* structureData[SIZE];
 
 public:
 	Chunk();
 
 	// setters
-	void setTile(const uint16_t i, const Tile& data);
-	void setTile(const uint8_t x, const uint8_t y, const Tile& data);
+	void setTile(const uint16_t i, const Tiles::TileID data);
+	void setTile(const Vec2i& coords, const Tiles::TileID data);
 
 	//void setStructure(const uint16_t i, const Structure& data);
 	//void setStructure(const uint8_t x, const uint8_t y, const Structure& data);
 
 	// getters
-	const Tile& getTile(const uint16_t i) const;
-	const Tile& getTile(const uint8_t x, const uint8_t y) const;
+	const Tiles::TileID getTileID(const uint16_t i) const;
+	const Tiles::TileID getTileID(const Vec2i& coords) const;
 
 	//const Structure& getStructure(const uint16_t i) const;
 	//const Structure& getStructure(const uint8_t x, const uint8_t y) const;
-
-	const TileCrop getTileCrop(const Vec2i& pos);
 
 	inline static constexpr int getLength() { return LENGTH; }
 	inline static constexpr int getSize()	{ return SIZE;	 }

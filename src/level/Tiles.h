@@ -5,6 +5,11 @@
 
 struct Tile
 {
+public:
+	// when one tile is drawn, it is actually made up of 2x2 sprites
+	static constexpr int SPRITE_DIMENSIONS{ 2 };
+
+public:
 	// ingame properties
 	SpriteSheet::SpriteID spriteID;
 	ColorPalette colorPalette;
@@ -34,6 +39,7 @@ public:
 	{
 		Grass,		// 0
 		Stone,		// 1
+		Water,		// 2
 		NumTiles
 	};
 
@@ -41,8 +47,9 @@ private:
 	// would be cool to make these constexpr somehow
 	inline static const Tile tiles[static_cast<int>(TileID::NumTiles)]
 	{
-		{ SpriteSheet::SpriteID::GroundTile, ColorPalette{131, 231, 232, 212} },	// grass 0
-		{ SpriteSheet::SpriteID::GroundTile, ColorPalette{111, 222, 333, 444} }		// stone 1
+		{ SpriteSheet::SpriteID::GroundTile, ColorPalette{433, 231, 232, 242} },	// grass 0
+		{ SpriteSheet::SpriteID::GroundTile, ColorPalette{433, 222, 333, 444} },		// stone 1
+		{ SpriteSheet::SpriteID::GroundTile, ColorPalette{433, 114, 225, 335} }		// water 2
 	};
 
 public:
@@ -50,18 +57,4 @@ public:
 	{
 		return tiles[static_cast<int>(t)];
 	}
-};
-
-// for getting corecctly cropped sprites of tiles
-enum class TileCrop
-{
-	TopLeft,		// 0
-	TopMiddle,		// 1
-	TopRight,		// 2
-	LeftMiddle,		// 3
-	MiddleMiddle,	// 4
-	RightMiddle,	// 5
-	LeftBottom,		// 6
-	MiddleBottom,	// 7
-	RightBottom		// 8
 };

@@ -2,29 +2,31 @@
 
 #include "../util/Random.h"
 
+#include "../util/Vector.h"
+
 Chunk::Chunk()
 {
 	Random rng;
 
+	static constexpr int NUM_TILES{ static_cast<int>(Tiles::TileID::NumTiles) };
+
 	// default initialize tileData to grass so we never have any nullptr nonsense
 	for (int i = 0; i < this->SIZE; ++i)
 	{
-		this->setTile(i, Tiles::getTile(static_cast<Tiles::TileID>(
-			rng.getNum(0, static_cast<int>(Tiles::TileID::NumTiles) - 1
-			))	));
+		this->setTile(i, static_cast<Tiles::TileID>( rng.getNum(0, NUM_TILES - 1) ));
 	}
 }
 
 // setters
-void Chunk::setTile(const uint16_t i, const Tile& data)
+void Chunk::setTile(const uint16_t i, const Tiles::TileID data)
 {
 	if (i < SIZE)
-		this->tileData[i] = &data;
+		this->tileData[i] = data;
 }
 
-void Chunk::setTile(const uint8_t x, const uint8_t y, const Tile& data)
+void Chunk::setTile(const Vec2i& coords, const Tiles::TileID data)
 {
-	this->setTile(x + (y * LENGTH), data);
+	this->setTile(Vec2i::toIndex(coords, Chunk::LENGTH, Chunk::LENGTH), data);
 }
 
 //void Chunk::setStructure(const uint16_t i, const Structure& data)
@@ -39,24 +41,17 @@ void Chunk::setTile(const uint8_t x, const uint8_t y, const Tile& data)
 //}
 
 // getters
-const Tile& Chunk::getTile(const uint16_t i) const
+const Tiles::TileID Chunk::getTileID(const uint16_t i) const
 {
 	if (i < SIZE)
-		return *this->tileData[i];
+		return this->tileData[i];
 
-	return *this->tileData[0];
+	return this->tileData[0];
 }
 
-const Tile& Chunk::getTile(const uint8_t x, const uint8_t y) const
+const Tiles::TileID Chunk::getTileID(const Vec2i& coords) const
 {
-	return getTile(x + (y * LENGTH));
-}
-
-const TileCrop Chunk::getTileCrop(const Vec2i& pos)
-{
-	return TileCrop::MiddleMiddle;
-
-	//const Tiles::TileID tileID{ this->getTile(pos.x, pos.y) };
+	return getTileID(coords.x + (coords.y * LENGTH));
 }
 
 //const Structure Chunk::getStructure(const uint16_t i) const

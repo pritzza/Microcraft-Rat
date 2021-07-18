@@ -40,7 +40,7 @@ private:
 
 		// ground tile
 		GROUND_X = 0 * SPRITE_LENGTH,
-		GROUND_Y = 3 * SPRITE_LENGTH,
+		GROUND_Y = 5 * SPRITE_LENGTH,
 	};
 	enum Dimensions
 	{

@@ -55,32 +55,20 @@ public:
 	(
 		const SpriteSheet& sheet,
 		const SpriteSheet::SpriteID id,
-		const uint16_t x,
-		const uint16_t y,
-		const ColorPalette& cp,
-		const RenderFlag rf = RenderFlag::NONE
-	);
-
-	// for rendering tiles/or other animated/cropped things
-	void render
-	(
-		const SpriteSheet& sheet,
-		const SpriteSheet::SpriteID id,
-		const Vec2i crop,
 		const Vec2i& coords,
 		const ColorPalette& cp,
-		const RenderFlag rf = RenderFlag::NONE
+		const RenderFlag rf = RenderFlag::NONE,
+		const Vec2i & displacement = Vec2i{0, 0}
 	);
 
-	void render(const SpriteSheet& sheet, const Chunk& chunk, const Vec2i& coords);
 	void render(const SpriteSheet& sheet, const World& world);
 	void render(const SpriteSheet& sheet, const Level& level);
 
 	// put a pixel on the image buffer
 	void putPixel(const uint16_t i, const Color c);
 	void putPixel(const uint16_t i, const uint8_t colorIndex);
-	void putPixel(const uint16_t x, const uint16_t, const Color c);
-	void putPixel(const uint16_t x, const uint16_t, const uint8_t colorIndex);
+	void putPixel(const Vec2i& coords, const Color c);
+	void putPixel(const Vec2i& coords, const uint8_t colorIndex);
 
 	void testPalette();
 

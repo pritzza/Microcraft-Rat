@@ -14,7 +14,8 @@ create a constant length for all tile sprites in SH
 add some sort of culling to camera
 maybe make an optimization where you only draw the pixels that changed from the last frame
 + fix bug of sprite height not being able to go past 2 units
-refactor Tile and Tiles so its less confusing
-write cropped Render::render() method
++ refactor Tile and Tiles so its less confusing
++ write cropped Render::render() method
 add a const SpriteSheet& member to renderer
-write Chunk::getTileCrop
++ write Chunk::getTileCrop
+fix World::getTilePos() and World::getChunkPos()

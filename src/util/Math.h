@@ -25,7 +25,7 @@ public:
     }
 
     template<typename T1, typename T2, typename T3>
-    inline static const T1 clamp(const T1 value, const T2 low, const T3 high)
+    inline static constexpr T1 clamp(const T1 value, const T2 low, const T3 high)
     {
         if (value > high)
             return high;
@@ -33,5 +33,14 @@ public:
             return low;
 
         return value;
+    }
+
+    template <typename T>
+    inline static constexpr T abs(const T n)
+    {
+        if (n < 0)
+            return -n;
+
+        return n;
     }
 };

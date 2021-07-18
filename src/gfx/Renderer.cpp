@@ -25,13 +25,20 @@ Renderer::Renderer(const uint16_t width, const uint16_t height)
 	generateColorPalette();
 }
 
-void Renderer::render(const SpriteSheet& sheet, const SpriteSheet::SpriteID id, const uint16_t x, const uint16_t y, const ColorPalette& cp, const RenderFlag rf)
+void Renderer::render
+(
+	const SpriteSheet& sheet,
+	const SpriteSheet::SpriteID id,
+	const Vec2i& coords,
+	const ColorPalette& cp,
+	const RenderFlag rf,
+	const Vec2i& displacement
+)
 {
 	const Sprite& s{ sheet.getSprite(id) };
-	//std::cout << static_cast<int>(id) << ": " << (int)s.h << '\n';
 
-	const bool xFlip = static_cast<uint8_t>( rf ) & static_cast<uint8_t>( RenderFlag::FLIP_X );
-	const bool yFlip = static_cast<uint8_t>( rf ) & static_cast<uint8_t>( RenderFlag::FLIP_Y );
+	const bool xFlip = static_cast<uint8_t>(rf) & static_cast<uint8_t>(RenderFlag::FLIP_X);
+	const bool yFlip = static_cast<uint8_t>(rf) & static_cast<uint8_t>(RenderFlag::FLIP_Y);
 
 	// xy is offset of where sprite is being drawn on the buffer
 	// ixy is the coord of the spritesheet pixel iterator
@@ -39,61 +46,54 @@ void Renderer::render(const SpriteSheet& sheet, const SpriteSheet::SpriteID id, 
 		for (uint8_t iy = 0; iy < s.h; ++iy)
 		{
 			// current pixel's spritesheet x y pos
-			const uint8_t shx = (xFlip ? (s.x + s.w - ix - 1) : s.x + ix) / SpriteSheet::getPixelsPerByte();
-			const uint8_t shy = (yFlip ? (s.y + s.h - iy - 1) : s.y + iy);
+			const uint8_t shx = ((xFlip ? (s.x + s.w - ix - 1) : s.x + ix) + displacement.x) / SpriteSheet::getPixelsPerByte();
+			const uint8_t shy =  (yFlip ? (s.y + s.h - iy - 1) : s.y + iy) + displacement.y;
+
+			const Vec2i& placingPixelPositon{ (coords + Vec2i{ ix, iy }) - this->camera.getPos() };
 
 			this->putPixel(
-				(x + ix) - this->camera.getPos().x,
-				(y + iy) - this->camera.getPos().y,
+				placingPixelPositon,
 				cp.getColors()
 				[
-					(sheet.getPixel(shx, shy, (0 + ix) % SpriteSheet::getPixelsPerByte()))
+					(sheet.getPixel(shx, shy, ix % SpriteSheet::getPixelsPerByte()))
 				]
 			);
 		}
 }
 
-void Renderer::render
-(
-	const SpriteSheet& sheet, 
-	const SpriteSheet::SpriteID id,
-	const Vec2i crop, 
-	const Vec2i& coords, 
-	const ColorPalette& cp, 
-	const RenderFlag rf
-)
-{
-}
-
-void Renderer::render(const SpriteSheet& sheet, const Chunk& chunk, const Vec2i& coords)
-{
-	for (int i = 0; i < Chunk::getSize(); ++i)
-	{
-		// tiny abbreviations
-		static constexpr int CHUNK_LEN{ Chunk::getLength() };
-
-		const SpriteSheet::SpriteID& tileSpriteID{ chunk.getTile(i).spriteID };
-		const ColorPalette& tileColorPalette{ chunk.getTile(i).colorPalette };
-
-		// write a constant somewhere that makes the size of all tiles the same
-		const uint8_t tileLen{ sheet.getSprite(tileSpriteID).w };
-
-		// tile is drawn in accordance to its position within its chunk, and that respective
-		// chunks position in the world
-
-		const Vec2i chunkOffset{ coords * tileLen * CHUNK_LEN};
-		const Vec2i tileOffset{ Vec2i::toVector(i, CHUNK_LEN, CHUNK_LEN) * tileLen };
-
-		const Vec2i& pos{ chunkOffset + tileOffset };
-
-		this->render(sheet, tileSpriteID, pos.x, pos.y, tileColorPalette);
-	}
-}
-
 void Renderer::render(const SpriteSheet& sheet, const World& world)
 {
 	for (const auto& [coords, chunk] : world.getChunks())
-		this->render(sheet, chunk, coords);
+		for (int i = 0; i < Chunk::getSize(); ++i)
+		{
+			// tiny abbreviations
+			static constexpr int CHUNK_LEN{ Chunk::getLength() };
+			static constexpr int TILE_DIM{ Tile::SPRITE_DIMENSIONS };
+
+			const SpriteSheet::SpriteID& tileSpriteID{ Tiles::getTile(chunk.getTileID(i)).spriteID };
+			const ColorPalette& tileColorPalette{ Tiles::getTile(chunk.getTileID(i)).colorPalette };
+
+			// write a constant somewhere that makes the size of all tiles the same
+			const uint8_t tileLen{ sheet.getSprite(tileSpriteID).w };
+
+			// tile is drawn in accordance to its position within its chunk, and that respective
+			// chunks position in the world
+
+			for (int j = 0; j < TILE_DIM * TILE_DIM; ++j)
+			{
+				const Vec2i chunkOffset{ coords * tileLen * CHUNK_LEN * TILE_DIM };
+				const Vec2i tileOffset{ Vec2i::toVector(i, CHUNK_LEN, CHUNK_LEN) * tileLen * TILE_DIM };
+				const Vec2i tileSpriteOffset{ Vec2i::toVector(j, TILE_DIM, TILE_DIM) * tileLen };
+
+				const Vec2i& pos{ chunkOffset + tileOffset + tileSpriteOffset };
+
+				const DetailedDirection d{ world.getTileDirection(coords, Vec2i::toVector(i, CHUNK_LEN, CHUNK_LEN), j) };
+
+				const Vec2i cropOffset{ (Directions::toVector(d) + 1) * tileLen };
+
+				this->render(sheet, tileSpriteID, pos, tileColorPalette, RenderFlag::NONE, cropOffset);
+			}
+		}
 }
 
 void Renderer::render(const SpriteSheet& sheet, const Level& level)
@@ -120,11 +120,10 @@ void Renderer::generateColorPalette()
 
 void Renderer::putPixel(const uint16_t i, const Color c)
 {
-	//const int x{ Vector2::toVectorX(i, bufferWidth, bufferHeight) };
-	const uint16_t x = i % bufferWidth;
-	const uint16_t y = i / bufferWidth;
+	const Vec2i pos{ Vec2i::toVector(i, bufferWidth, bufferHeight) };
 
-	this->putPixel(x, y, c);
+
+	this->putPixel(pos, c);
 }
 
 void Renderer::putPixel(const uint16_t i, const uint8_t colorIndex)
@@ -132,14 +131,14 @@ void Renderer::putPixel(const uint16_t i, const uint8_t colorIndex)
 	this->putPixel(i, this->colorPalette[colorIndex]);
 }
 
-void Renderer::putPixel(const uint16_t x, const uint16_t y, const uint8_t colorIndex)
+void Renderer::putPixel(const Vec2i& coords, const uint8_t colorIndex)
 {
-	this->putPixel(x, y, this->colorPalette[colorIndex]);
+	this->putPixel(coords, this->colorPalette[colorIndex]);
 }
 
-void Renderer::putPixel(const uint16_t x, const uint16_t y, const Color c)
+void Renderer::putPixel(const Vec2i& coords, const Color c)
 {
-	if (!c.isTransparent() && AABB::isPointInside(x, y, 0, 0, bufferWidth-1, bufferHeight-1))
+	if (!c.isTransparent() && AABB::isPointInside(coords.x, coords.y, 0, 0, bufferWidth-1, bufferHeight-1))
 	{
 		static constexpr uint8_t NORMAL_COLOR_MAX{ std::numeric_limits<uint8_t>::max() };
 
@@ -150,7 +149,7 @@ void Renderer::putPixel(const uint16_t x, const uint16_t y, const Color c)
 
 		// the renderer's buffer contains the pixel data that is going on the screen
 		// so here is where we are actually telling which pixel goes on the screen
-		this->buffer.setPixel(x, y, sf::Color{ r, g, b });
+		this->buffer.setPixel(coords.x, coords.y, sf::Color{ r, g, b });
 	}
 }
 

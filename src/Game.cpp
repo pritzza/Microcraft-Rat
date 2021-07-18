@@ -33,8 +33,8 @@ void Game::loop()
 			{
 				//renderer.getCamera().centerOn(Vec2i{ x, 0 });
 				renderer.testPalette();
-				renderer.render(this->sheet, SpriteSheet::SpriteID::Sprite, 69, 69, ColorPalette(renderer, 224, true));
-				renderer.putPixel(x, 0, { 0,0,0 });
+				renderer.render(this->sheet, SpriteSheet::SpriteID::Sprite, Vec2i{69, 69}, ColorPalette(renderer, 224, true));
+				renderer.putPixel( Vec2i{ x, 0 }, Color{ 0, 0, 0 });
 
 				renderer.render(this->sheet, this->level);
 
