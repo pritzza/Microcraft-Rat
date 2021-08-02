@@ -2,7 +2,7 @@
 
 int main()
 {
-    Game game{ 256, 144, 12, "Game", sf::Style::Default };
+    Game game{ 256, 144, 60, "Game", sf::Style::Default };
 
     game.start();
 

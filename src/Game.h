@@ -10,6 +10,8 @@
 
 #include "level/Level.h"
 
+#include "input/Keyboard.h"
+
 class Game
 {
 private:
@@ -19,9 +21,11 @@ private:
 
 	DeltaTime delta;
 
+	Keyboard keyboard;
+
 	Level level;
 
-	const uint8_t frameRate;
+	uint8_t frameRate;
 	bool isRunning;
 
 private:
@@ -38,6 +42,10 @@ public:
 		const int windowStyle
 	);
 
-	inline void start() { this-> isRunning = true; this->loop(); }
+	inline void start() 
+	{
+		this->isRunning = true; 
+		this->loop();
+	}
 
 };

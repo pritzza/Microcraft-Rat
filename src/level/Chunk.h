@@ -4,6 +4,7 @@
 #include "../util/AABB.h"
 
 #include "Tiles.h"
+#include "../gfx/sprite/Sprite.h"
 
 struct Vec2i;
 
@@ -17,11 +18,11 @@ public:
 	static constexpr uint16_t SIZE{ LENGTH * LENGTH };
 
 public:
-	Tiles::TileID tileData[SIZE];
-	//Structure* structureData[SIZE];
+	Tiles::TileID tileData[SIZE] {Tiles::TileID::Grass};
+	//Tiles::TileID structureData[SIZE]{ Tiles::TileID::Grass };
 
 public:
-	Chunk();
+	Chunk(const int seed = 0);
 
 	// setters
 	void setTile(const uint16_t i, const Tiles::TileID data);
@@ -39,5 +40,11 @@ public:
 
 	inline static constexpr int getLength() { return LENGTH; }
 	inline static constexpr int getSize()	{ return SIZE;	 }
+
+	// returns length of chunk in pixels
+	inline static constexpr int getPixelLength() 
+	{
+		return LENGTH * Tile::SPRITE_DIMENSIONS * SpriteSheet::getSprite(SpriteSheet::SpriteID::GroundTile).w;
+	}
 
 };

@@ -1,6 +1,13 @@
 #include "Level.h"
 
-void Level::generateWorld()
+#include "../gfx/Camera.h"
+
+Level::Level(const Vec2i windowDimensions)
+	:
+	world{0,0}
+{}
+
+void Level::update(const Camera& camera)
 {
-	this->world.loadChunk( Vec2i{ 0, 0 } );
+	this->world.update(camera);
 }

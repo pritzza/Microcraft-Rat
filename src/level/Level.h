@@ -2,14 +2,17 @@
 
 #include "World.h"
 
+class Camera;
+
 class Level
 {
 private:
 	World world;
 
 public:
+	Level(const Vec2i windowDimensions);
 
-	void generateWorld();
+	void update(const Camera& camera);
 
 	inline const World& getWorld() const { return this->world; }
 };

@@ -7,6 +7,8 @@
 class Color
 {
 private:
+	static constexpr uint8_t NUM_CHANNELS{ 3 };
+
 	// min and max channel value for rgb
 	static constexpr uint8_t MIN_VAL{ 0 };
 	static constexpr uint8_t MAX_VAL{ 5 };
@@ -74,7 +76,9 @@ public:
 	inline const uint8_t getGreen() const { return (this->data >> GREEN_OFFSET) & 0b0000'0000'0000'1111; }
 	inline const uint8_t getBlue() const  { return (this->data >> BLUE_OFFSET)  & 0b0000'0000'0000'1111; }
 
-	inline constexpr static uint8_t getColorRange() { return COLOR_RANGE; }
-	inline constexpr static uint8_t getMinValue()	{ return MIN_VAL;	  }
-	inline constexpr static uint8_t getMaxValue()	{ return MAX_VAL;     }
+	inline constexpr static uint8_t getColorRange()  { return COLOR_RANGE;  }
+	inline constexpr static uint8_t getMinValue()	 { return MIN_VAL;	    }
+	inline constexpr static uint8_t getMaxValue()	 { return MAX_VAL;      }
+
+	inline constexpr static uint8_t getNumChannels() { return NUM_CHANNELS; }
 };

@@ -81,14 +81,20 @@ void Renderer::render(const SpriteSheet& sheet, const World& world)
 
 			for (int j = 0; j < TILE_DIM * TILE_DIM; ++j)
 			{
+				// positional offset from chunk to chunk
 				const Vec2i chunkOffset{ coords * tileLen * CHUNK_LEN * TILE_DIM };
+
+				// positional offset from tile to tile
 				const Vec2i tileOffset{ Vec2i::toVector(i, CHUNK_LEN, CHUNK_LEN) * tileLen * TILE_DIM };
+
+				// positional offset from tile sprite to tile sprite (tile is made up for 4 sprites)
 				const Vec2i tileSpriteOffset{ Vec2i::toVector(j, TILE_DIM, TILE_DIM) * tileLen };
 
 				const Vec2i& pos{ chunkOffset + tileOffset + tileSpriteOffset };
 
 				const DetailedDirection d{ world.getTileDirection(coords, Vec2i::toVector(i, CHUNK_LEN, CHUNK_LEN), j) };
 
+				// + 1 so that d 0,0 is the center of the tilesprite in the actual spritesheet
 				const Vec2i cropOffset{ (Directions::toVector(d) + 1) * tileLen };
 
 				this->render(sheet, tileSpriteID, pos, tileColorPalette, RenderFlag::NONE, cropOffset);
@@ -121,7 +127,6 @@ void Renderer::generateColorPalette()
 void Renderer::putPixel(const uint16_t i, const Color c)
 {
 	const Vec2i pos{ Vec2i::toVector(i, bufferWidth, bufferHeight) };
-
 
 	this->putPixel(pos, c);
 }

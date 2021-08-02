@@ -8,6 +8,14 @@ struct Vec2i
 {
 	int x, y;
 
+	constexpr Vec2i(const int x, const int y):
+		x{ x },
+		y{ y }
+	{}
+
+	void print() const;
+
+	// operator overloads
 	bool operator==(const Vec2i& a) const {
 		return a.x == x && a.y == y;
 	}
@@ -32,6 +40,7 @@ struct Vec2i
 	Vec2i operator+(const int addend) const		{ return Vec2i{ x + addend,		 y + addend		}; }
 	Vec2i operator-(const int subtractor) const { return Vec2i{ x - subtractor,  y - subtractor }; }
 
+	// static functions
 	static inline constexpr int toIndex(const Vec2i& vec, const int w, const int h)
 	{
 		if (AABB::isPointInside(vec.x, vec.y, 0, 0, w, h))

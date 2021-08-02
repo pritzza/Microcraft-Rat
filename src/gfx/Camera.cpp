@@ -19,9 +19,22 @@ const bool Camera::isInView(const Sprite& s) const
 {
 	const int rw{ renderer.getBufferWidth() / 2 };
 	const int rh{ renderer.getBufferHeight() / 2 };
-	
+
 	const AABB fieldOfView{ pos.x - rw, pos.y - rh, pos.x + rw, pos.y + rh };
-	const AABB sprite{ s.x, s.y, s.w, s.h };
-	
-	return AABB::collide(fieldOfView, sprite);
+	const AABB spriteVisibleBounds{ s.x, s.y, s.w, s.h };
+
+	return AABB::collide(fieldOfView, spriteVisibleBounds);
+}
+
+const bool Camera::isInView(const AABB& s) const
+{
+	return false;
+	//const AABB sprite{ (s.x, s.y, s.w, s.h) };
+	//
+	//return this->isInView(sprite);
+}
+
+const Vec2i Camera::getDimensions() const
+{
+	return Vec2i{ this->renderer.getBufferWidth(), this->renderer.getBufferHeight() };
 }

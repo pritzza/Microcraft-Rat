@@ -34,7 +34,7 @@ public:
 
 	inline const uint16_t getWidth() const		{ return this->width;   }
 	inline const uint16_t getHeight() const		{ return this->height;  }
-	inline const sf::Window& getWindow() const  { return this->window;  }
+	inline const sf::RenderWindow& getWindow() const  { return this->window;  }
 
 	inline const bool isFocused() const			{ return this->focused; }
 	inline const bool isOpen() const			{ return this->window.isOpen(); }

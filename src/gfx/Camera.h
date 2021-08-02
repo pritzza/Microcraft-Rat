@@ -19,6 +19,9 @@ public:
 	void centerOn(const Vec2i& point, const Vec2i& minPos, const Vec2i& maxPos);
 
 	const bool isInView(const Sprite& s) const;
+	const bool isInView(const AABB& s) const;
+
+	const Vec2i getDimensions() const;
 
 	inline const Vec2i& getPos() const { return this->pos; }
 

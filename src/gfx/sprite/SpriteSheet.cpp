@@ -46,11 +46,6 @@ void SpriteSheet::loadFromFile(const std::string& fileName)
 	}
 }
 
-const Sprite& SpriteSheet::getSprite(const SpriteSheet::SpriteID s) const
-{
-	return this->SPRITES[static_cast<uint8_t>(s)];
-}
-
 const uint8_t SpriteSheet::getPixel(const uint16_t x, const uint16_t y, const uint8_t i) const
 {
 	return (this->data[x + (y * SHEET_WIDTH)] & (DETERMINING_BITS >> (i * PIXEL_BIT_DEPTH))) >> (((PIXELS_PER_BYTE - 1) - i) * PIXEL_BIT_DEPTH);

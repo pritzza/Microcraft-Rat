@@ -5,40 +5,56 @@
 #include <iostream>
 
 Game::Game(
-	const uint16_t width, 
-	const uint16_t height, 
-	const uint8_t frameRate, 
+	const uint16_t width,
+	const uint16_t height,
+	const uint8_t frameRate,
 	const std::string& name,
 	const int windowStyle)
 	:
 	window{ width, height, name, windowStyle },
 	renderer{ width, height },
+	level{ Vec2i{width, height} },
+	keyboard{ window.getWindow() },
 	frameRate{ frameRate },
 	isRunning{ false }
 {}
 
 void Game::loop()
 {
-	uint8_t x{};
-
-	this->level.generateWorld();
+	Vec2i cameraCenter{ 0,0 };
 
 	while (isRunning)
 	{
 		window.update();
-		
+		delta.start();
+
 		if (window.isOpen())
 		{
+			keyboard.update();
+
 			if (window.isFocused())
 			{
-				//renderer.getCamera().centerOn(Vec2i{ x, 0 });
+				// handle input
+				if (keyboard.w.isDown())
+					cameraCenter.y--;
+				if (keyboard.a.isDown())
+					cameraCenter.x--;
+				if (keyboard.s.isDown())
+					cameraCenter.y++;
+				if (keyboard.d.isDown())
+					cameraCenter.x++;
+
+				renderer.getCamera().centerOn(cameraCenter);
+
+				// update
+				this->level.update(renderer.getCamera());
+
+				// render
 				renderer.testPalette();
-				renderer.render(this->sheet, SpriteSheet::SpriteID::Sprite, Vec2i{69, 69}, ColorPalette(renderer, 224, true));
-				renderer.putPixel( Vec2i{ x, 0 }, Color{ 0, 0, 0 });
 
 				renderer.render(this->sheet, this->level);
 
-				++x;
+				renderer.render(this->sheet, SpriteSheet::SpriteID::Sprite, Vec2i{69, 69}, ColorPalette(renderer, 224, true));
 
 				window.render(renderer.getBuffer());
 			}
@@ -46,6 +62,6 @@ void Game::loop()
 		else
 			stop();
 
-		delta.wait(frameRate);
+		delta.wait(this->frameRate);
 	}
 }

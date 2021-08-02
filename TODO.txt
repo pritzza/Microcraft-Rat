@@ -1,6 +1,6 @@
 TODO:
 sprite animations
-terrain generation
+~ terrain generation
 ~ level/world class
 entity component system
 text sprites
@@ -18,4 +18,11 @@ maybe make an optimization where you only draw the pixels that changed from the 
 + write cropped Render::render() method
 add a const SpriteSheet& member to renderer
 + write Chunk::getTileCrop
-fix World::getTilePos() and World::getChunkPos()
++ fix World::getTilePos() and World::getChunkPos()
+add dt based gamespeed stuff
+fix horrendous lag
+fix timer
+minimap
+fix centerChunk stuff in World's chunk loading
+optimize tile rendering by storing tile sprite directions in memory
+update Camera::IsInView to use Vec2i

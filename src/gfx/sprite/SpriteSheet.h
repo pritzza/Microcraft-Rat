@@ -76,7 +76,10 @@ private:
 public:
 	SpriteSheet(const std::string& fileName);
 
-	const Sprite& getSprite(const SpriteSheet::SpriteID s) const;
+	inline static constexpr Sprite getSprite(const SpriteSheet::SpriteID s)
+	{
+		return SPRITES[static_cast<uint8_t>(s)];
+	}
 	
 	// returns 2 bit pixel at index of xy coord
 	const uint8_t getPixel(const uint16_t x, const uint16_t y, const uint8_t i) const;
@@ -86,4 +89,5 @@ public:
 	inline static constexpr uint16_t getHeight()	   { return SHEET_HEIGHT;	 }
 	inline static constexpr uint16_t getWidth()		   { return SHEET_WIDTH;	 }
 	inline static constexpr uint8_t getPixelsPerByte() { return PIXELS_PER_BYTE; }
+
 };
