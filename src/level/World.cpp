@@ -81,11 +81,14 @@ void World::generateChunk(const Vec2i& chunkCoord)
 			tileValue = perlinNoise.noise2D_0_1((x + tileOffset.x) / FREQUENCY, (y + tileOffset.y) / FREQUENCY);
 
 			if (tileValue < WATER_MAX)
-				chunk.setTile(Vec2i{ x, y }, Tiles::TileID::Water);
+				chunk.setTileBase(Vec2i{ x, y }, TileBases::ID::Water);
 			else if (tileValue < GRASS_MAX)
-				chunk.setTile(Vec2i{ x, y }, Tiles::TileID::Grass);
+			{
+				chunk.setTileBase(Vec2i{ x, y }, TileBases::ID::Grass);
+				chunk.setTileFeature(Vec2i{ x,y }, TileFeatures::ID::Flower);
+			}
 			else if (tileValue < STONE_MAX)
-				chunk.setTile(Vec2i{ x, y }, Tiles::TileID::Stone);
+				chunk.setTileBase(Vec2i{ x, y }, TileBases::ID::Stone);
 		}
 }
 
@@ -148,9 +151,9 @@ const DetailedDirection World::getTileDirection(const Vec2i& chunkPos, const Vec
 	{
 		DetailedDirection direction{ DetailedDirection::Center };
 
-		const Tiles::TileID baseTileID{ this->chunks.at(chunkPos).getTileID(tilePos) };
+		const TileBases::ID baseTileID{ this->chunks.at(chunkPos).getTileBaseID(tilePos) };
 
-		static constexpr int TILE_DIM{ Tile::SPRITE_DIMENSIONS };
+		static constexpr int TILE_DIM{ TileData::SPRITE_DIMENSIONS };
 
 		// * 2 so its its always between 0-2 and -1 so it becomes just 1's and -1's
 		const Vec2i subTileSpriteOffset{ (Vec2i::toVector(tileSpriteIndex, TILE_DIM, TILE_DIM) * 2) - 1 };
@@ -167,7 +170,7 @@ const DetailedDirection World::getTileDirection(const Vec2i& chunkPos, const Vec
 
 			if (
 				this->chunks.find(adjacentTilesChunkPos) != this->chunks.end() &&
-				baseTileID == chunks.at(adjacentTilesChunkPos).getTileID(adjacentTilesPos)
+				baseTileID == chunks.at(adjacentTilesChunkPos).getTileBaseID(adjacentTilesPos)
 				)
 				direction = Directions::subtract(direction, static_cast<Direction>(i));
 		}

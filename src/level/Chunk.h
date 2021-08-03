@@ -1,10 +1,13 @@
 #pragma once
 
-#include <cstdint>
-#include "../util/AABB.h"
+#include "tile/Tile.h"
 
-#include "Tiles.h"
+#include "../util/AABB.h"
+#include "../util/Vector.h"
+
 #include "../gfx/sprite/Sprite.h"
+
+#include <cstdint>
 
 struct Vec2i;
 
@@ -18,25 +21,30 @@ public:
 	static constexpr uint16_t SIZE{ LENGTH * LENGTH };
 
 public:
-	Tiles::TileID tileData[SIZE] {Tiles::TileID::Grass};
-	//Tiles::TileID structureData[SIZE]{ Tiles::TileID::Grass };
+	Tile tiles[SIZE];
 
 public:
 	Chunk(const int seed = 0);
 
 	// setters
-	void setTile(const uint16_t i, const Tiles::TileID data);
-	void setTile(const Vec2i& coords, const Tiles::TileID data);
+	void setTile(const uint16_t i, const Tile& t)						{ tiles[i] = t;							  						  }
+	void setTile(const Vec2i& coords, const Tile& t)					{ tiles[Vec2i::toIndex(coords, LENGTH, LENGTH)] = t;			  }
 
-	//void setStructure(const uint16_t i, const Structure& data);
-	//void setStructure(const uint8_t x, const uint8_t y, const Structure& data);
+	void setTileBase(const uint16_t i, const TileBases::ID id)			{ tiles[i].baseID = id;											  }
+	void setTileBase(const Vec2i& coords, const TileBases::ID id)		{ tiles[Vec2i::toIndex(coords, LENGTH, LENGTH)].baseID = id;      }
+
+	void setTileFeature(const uint16_t i, const TileFeatures::ID id)	{ tiles[i].featureID = id;										  }
+	void setTileFeature(const Vec2i& coords, const TileFeatures::ID id) { tiles[Vec2i::toIndex(coords, LENGTH, LENGTH)].featureID = id;	  }
 
 	// getters
-	const Tiles::TileID getTileID(const uint16_t i) const;
-	const Tiles::TileID getTileID(const Vec2i& coords) const;
+	const Tile& getTile(const uint16_t i) const							{ return tiles[i];							  					  }
+	const Tile& getTile(const Vec2i& coords) const						{ return tiles[Vec2i::toIndex(coords, LENGTH, LENGTH)];			  }
 
-	//const Structure& getStructure(const uint16_t i) const;
-	//const Structure& getStructure(const uint8_t x, const uint8_t y) const;
+	const TileBases::ID getTileBaseID(const uint16_t i) const			{ return tiles[i].baseID;										  }
+	const TileBases::ID getTileBaseID(const Vec2i& coords) const		{ return tiles[Vec2i::toIndex(coords, LENGTH, LENGTH)].baseID;    }
+
+	const TileFeatures::ID getTileFeatueID(const uint16_t i) const		{ return tiles[i].featureID;									  }
+	const TileFeatures::ID getTileFeatueID(const Vec2i& coords) const	{ return tiles[Vec2i::toIndex(coords, LENGTH, LENGTH)].featureID; }
 
 	inline static constexpr int getLength() { return LENGTH; }
 	inline static constexpr int getSize()	{ return SIZE;	 }
@@ -44,7 +52,7 @@ public:
 	// returns length of chunk in pixels
 	inline static constexpr int getPixelLength() 
 	{
-		return LENGTH * Tile::SPRITE_DIMENSIONS * SpriteSheet::getSprite(SpriteSheet::SpriteID::GroundTile).w;
+		return LENGTH * TileData::SPRITE_DIMENSIONS * SpriteSheet::getSprite(SpriteSheet::SpriteID::GroundTileBase).w;
 	}
 
 };

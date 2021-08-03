@@ -38,9 +38,13 @@ private:
 		SPRITE_X = 1 * SPRITE_LENGTH,
 		SPRITE_Y = 0 * SPRITE_LENGTH,
 
-		// ground tile
+		// ground base
 		GROUND_X = 0 * SPRITE_LENGTH,
 		GROUND_Y = 5 * SPRITE_LENGTH,
+
+		// flower feature
+		FLOWER_X = 2 * SPRITE_LENGTH,
+		FLOWER_Y = 3 * SPRITE_LENGTH,
 	};
 	enum Dimensions
 	{
@@ -51,11 +55,16 @@ private:
 		// Ground Tile (should have seame length)
 		GROUND_W = 1 * SPRITE_LENGTH,
 		GROUND_H = 1 * SPRITE_LENGTH,
+
+		// flower feature
+		FLOWER_W = 1 * SPRITE_LENGTH,
+		FLOWER_H = 1 * SPRITE_LENGTH,
 	};
 	static constexpr Sprite SPRITES[]
 	{
 		{ SPRITE_X, SPRITE_Y, SPRITE_W, SPRITE_H },	// 0
 		{ GROUND_X, GROUND_Y, GROUND_W, GROUND_H },	// 1
+		{ FLOWER_X, FLOWER_Y, FLOWER_W, FLOWER_H },	// 1
 	};
 	
 	static constexpr uint16_t NUM_SPRITES{ sizeof(SPRITES) / sizeof(Sprite) };
@@ -63,8 +72,9 @@ private:
 public:
 	enum class SpriteID
 	{
-		Sprite,		// 0
-		GroundTile,	// 1
+		Sprite,				// 0
+		GroundTileBase,		// 1
+		FlowerTileFeature	// 2
 	};
 
 private:

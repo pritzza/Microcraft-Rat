@@ -6,7 +6,7 @@
 #include "../util/Vector.h"
 
 #include "../level/Level.h"
-#include "../level/Tiles.h"
+#include "../level/tile/Tile.h"
 
 #include <limits>
 #include <cassert>
@@ -68,17 +68,21 @@ void Renderer::render(const SpriteSheet& sheet, const World& world)
 		{
 			// tiny abbreviations
 			static constexpr int CHUNK_LEN{ Chunk::getLength() };
-			static constexpr int TILE_DIM{ Tile::SPRITE_DIMENSIONS };
+			static constexpr int TILE_DIM{ TileData::SPRITE_DIMENSIONS };
 
-			const SpriteSheet::SpriteID& tileSpriteID{ Tiles::getTile(chunk.getTileID(i)).spriteID };
-			const ColorPalette& tileColorPalette{ Tiles::getTile(chunk.getTileID(i)).colorPalette };
+			// get tileNase's sprite and palette
+			const SpriteSheet::SpriteID& tileBaseSpriteID{ TileBases::getBase(chunk.getTileBaseID(i)).spriteID };
+			const ColorPalette& tileBaseColorPalette{ TileBases::getBase(chunk.getTileBaseID(i)).colorPalette };
 
-			// write a constant somewhere that makes the size of all tiles the same
-			const uint8_t tileLen{ sheet.getSprite(tileSpriteID).w };
+			// get tileFeature's sprite and palette
+			const bool isTileFeatureValid{ chunk.getTileFeatueID(i) != TileFeatures::ID::None };
+			const SpriteSheet::SpriteID& tileFeatureSpriteID{ TileFeatures::getFeature(chunk.getTileFeatueID(i)).spriteID };
+			const ColorPalette& tileFeatureColorPalette{ TileFeatures::getFeature(chunk.getTileFeatueID(i)).colorPalette };
+
+			static constexpr int tileLen{ SpriteSheet::getSprite(SpriteSheet::SpriteID::GroundTileBase).w };
 
 			// tile is drawn in accordance to its position within its chunk, and that respective
 			// chunks position in the world
-
 			for (int j = 0; j < TILE_DIM * TILE_DIM; ++j)
 			{
 				// positional offset from chunk to chunk
@@ -97,7 +101,10 @@ void Renderer::render(const SpriteSheet& sheet, const World& world)
 				// + 1 so that d 0,0 is the center of the tilesprite in the actual spritesheet
 				const Vec2i cropOffset{ (Directions::toVector(d) + 1) * tileLen };
 
-				this->render(sheet, tileSpriteID, pos, tileColorPalette, RenderFlag::NONE, cropOffset);
+				this->render(sheet, tileBaseSpriteID, pos, tileBaseColorPalette, RenderFlag::NONE, cropOffset);
+
+				if (isTileFeatureValid)
+					this->render(sheet, tileFeatureSpriteID, pos, tileFeatureColorPalette, RenderFlag::NONE, cropOffset);
 			}
 		}
 }

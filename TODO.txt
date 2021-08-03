@@ -6,6 +6,7 @@ entity component system
 text sprites
 refactor everything
 	- create 2d vector class and integrate it everywhere
+	- update Camera::IsInView to use Vec2i
 implement saturationRange in ColorPalette()
 art
 + make World::chunks unorderedmap compatible with my Vec2i
@@ -25,4 +26,3 @@ fix timer
 minimap
 fix centerChunk stuff in World's chunk loading
 optimize tile rendering by storing tile sprite directions in memory
-update Camera::IsInView to use Vec2i

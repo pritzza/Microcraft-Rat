@@ -18,6 +18,7 @@ class ColorPalette
 private:
 	static constexpr uint8_t NUM_COLORS{ SpriteSheet::getPixelsPerByte() };
 	static constexpr uint8_t DEFAULT_TRANSPARENT_INDEX{ 0 };	// if a sprite has transparency, its at this index
+
 private:
 	uint8_t colors[NUM_COLORS];	// indices of colors in renderer's color palette
 
