@@ -20,27 +20,28 @@ void World::update(const Camera& camera)
 	const Vec2i& camPos{ camera.getPos() };
 	constexpr int chunkLen{ Chunk::getPixelLength() };
 
-	static constexpr int RENDER_DISTANCE{ 3 };
+	static constexpr int LOAD_DISTANCE{ 2 };
 
-	const Vec2i chunksPerScreen{ (camDim / chunkLen) + 3 };
+	// the number of chunks that are loaded and being updated in the x and y axis around the camera
+	const Vec2i chunksLoaded{ (camDim / chunkLen) + LOAD_DISTANCE };
 
-	const Vec2i centerChunk{ (camPos + (camDim / 2)) / chunkLen };
+	// if camera's coords are negative, they become off by 1 cause of some funky division
+	const Vec2i negativeCompensation{ camPos.x < -chunkLen, camPos.y < -chunkLen/2 };
 
-	//std::cout << chunksPerScreen.x << ", " << chunksPerScreen.y << '\n';
-	//std::cout << centerChunk.x << ", " << centerChunk.y << '\n';
+	const Vec2i centerChunk{ ((camPos + (camDim / 2)) / chunkLen) - negativeCompensation };
 
 	// load surrounding chunks
-	for (int x = 0; x < chunksPerScreen.x; ++x)
-		for (int y = 0; y < chunksPerScreen.y; ++y)
+	for (int x = 0; x < chunksLoaded.x; ++x)
+		for (int y = 0; y < chunksLoaded.y; ++y)
 		{
-			const Vec2i visibleChunkCoords
+			const Vec2i inRangeChunkCoords
 			{
-				(centerChunk.x - (chunksPerScreen.x / 2)) + x,
-				(centerChunk.y - (chunksPerScreen.y / 2)) + y
+				(centerChunk.x - (chunksLoaded.x / 2)) + x,
+				(centerChunk.y - (chunksLoaded.y / 2)) + y + (camPos.y % chunkLen > chunkLen / 2)	// to accomidate the closer chunk
 			};
 
-			if (chunks.find(visibleChunkCoords) == chunks.end())
-				loadChunk(visibleChunkCoords);
+			if (chunks.find(inRangeChunkCoords) == chunks.end())
+				loadChunk(inRangeChunkCoords);
 		}
 
 	// update or unload further chunks
@@ -71,9 +72,11 @@ void World::generateChunk(const Vec2i& chunkCoord)
 
 	double tileValue;
 
-	for (int x = 0; x < Chunk::getLength(); ++x)
-		for (int y = 0; y < Chunk::getLength(); ++y)
+	for (int y = 0; y < Chunk::getLength(); ++y)
+		for (int x = 0; x < Chunk::getLength(); ++x)
 		{
+			const Vec2i tileCoord{ x, y };
+
 			static constexpr double WATER_MAX{ 0.4 };
 			static constexpr double GRASS_MAX{ 0.7 };
 			static constexpr double STONE_MAX{ 1 };
@@ -81,14 +84,27 @@ void World::generateChunk(const Vec2i& chunkCoord)
 			tileValue = perlinNoise.noise2D_0_1((x + tileOffset.x) / FREQUENCY, (y + tileOffset.y) / FREQUENCY);
 
 			if (tileValue < WATER_MAX)
-				chunk.setTileBase(Vec2i{ x, y }, TileBases::ID::Water);
+				chunk.setTileBase(tileCoord, TileBases::ID::Water);
 			else if (tileValue < GRASS_MAX)
-			{
-				chunk.setTileBase(Vec2i{ x, y }, TileBases::ID::Grass);
-				chunk.setTileFeature(Vec2i{ x,y }, TileFeatures::ID::Flower);
-			}
+				chunk.setTileBase(tileCoord, TileBases::ID::Grass);
 			else if (tileValue < STONE_MAX)
-				chunk.setTileBase(Vec2i{ x, y }, TileBases::ID::Stone);
+				chunk.setTileBase(tileCoord, TileBases::ID::Stone);
+
+			Tile& tile{ chunk.getTile(tileCoord) };
+
+			for (int i = 0; i < TileData::NUM_COMPONENTS; ++i)
+			{
+				tile.flavors[i] = static_cast<TileFlavor::Value>(rng.getNum(0, TileFlavor::NUM_FLAVORS));
+
+				if (tile.baseID == TileBases::ID::Grass)
+				{
+					if (rng.getNum(0, 8) == 0)
+					{
+						tile.featureID = TileFeatures::ID::Flower;
+						tile.featurePlacement[i] = true;
+					}
+				}
+			}
 		}
 }
 
@@ -153,7 +169,7 @@ const DetailedDirection World::getTileDirection(const Vec2i& chunkPos, const Vec
 
 		const TileBases::ID baseTileID{ this->chunks.at(chunkPos).getTileBaseID(tilePos) };
 
-		static constexpr int TILE_DIM{ TileData::SPRITE_DIMENSIONS };
+		static constexpr int TILE_DIM{ TileData::DIMENSION };
 
 		// * 2 so its its always between 0-2 and -1 so it becomes just 1's and -1's
 		const Vec2i subTileSpriteOffset{ (Vec2i::toVector(tileSpriteIndex, TILE_DIM, TILE_DIM) * 2) - 1 };

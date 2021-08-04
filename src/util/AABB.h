@@ -6,7 +6,7 @@ struct AABB
 {
 	int x, y, w, h;
 
-	AABB()
+	constexpr AABB()
 		:
 		x{ 0 },
 		y{ 0 },
@@ -14,7 +14,7 @@ struct AABB
 		h{ 8 }
 	{}
 
-	AABB(const int x, const int y, const int w, const int h)
+	constexpr AABB(const int x, const int y, const int w, const int h)
 		:
 		x{ x },
 		y{ y },

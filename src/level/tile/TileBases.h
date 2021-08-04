@@ -18,9 +18,10 @@ private:
 	// would be cool to make these constexpr somehow
 	inline static const TileBaseData tileBases[static_cast<int>(ID::NumTiles)]
 	{
-		{ SpriteSheet::SpriteID::GroundTileBase, ColorPalette{433, 231, 232, 242}, false },	// grass 0
-		{ SpriteSheet::SpriteID::GroundTileBase, ColorPalette{433, 222, 333, 444}, false },	// stone 1
-		{ SpriteSheet::SpriteID::GroundTileBase, ColorPalette{433, 114, 225, 335}, true  }	// water 2
+		//	SpriteID, ColorPalette, hasFlavor, isFluid
+		{ SpriteSheet::SpriteID::GroundTileBaseStart, ColorPalette{433, 231, 232, 242}, true, false },	// grass 0
+		{ SpriteSheet::SpriteID::GroundTileBaseStart, ColorPalette{433, 222, 333, 444}, true, false },	// stone 1
+		{ SpriteSheet::SpriteID::GroundTileBaseStart, ColorPalette{433, 114, 225, 335}, true, true  }	// water 2
 	};
 
 public:

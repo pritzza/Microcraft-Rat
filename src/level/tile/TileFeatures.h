@@ -9,14 +9,15 @@ public:
 	{
 		None,			// 0
 		Flower,			// 1
-		NumDecorations
+		NumFeatures
 	};
 
 private:
-	inline static const TileFeatureData tileFeatures[static_cast<int>(ID::NumDecorations)]
+	inline static const TileFeatureData tileFeatures[static_cast<int>(ID::NumFeatures)]
 	{
-		{ SpriteSheet::SpriteID::GroundTileBase,	 ColorPalette { 999, 999, 999, 999 }, false },	// none 0
-		{ SpriteSheet::SpriteID::FlowerTileFeature,	 ColorPalette { 440, 330, 556, 999 }, false },	// flower 1
+		//	SpriteID, ColorPalette, hasFlavor, isSolid, isPlaceableOnEdges, isSmall
+		{ SpriteSheet::SpriteID::GroundTileBaseStart,	 ColorPalette { 1000,1000,1000,1000 }, false, false, false, false },	// none 0
+		{ SpriteSheet::SpriteID::FlowerTileFeatureStart, ColorPalette { 1000, 556, 440, 550 }, true,  false, false, true  },	// flower 1
 	};
 
 public:

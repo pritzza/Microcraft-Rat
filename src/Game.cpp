@@ -51,8 +51,11 @@ void Game::loop()
 				
 				this->level.update(renderer.getCamera());
 
+				//camPos.print();
+				//centerChunk.print();
+
 				// render
-				//renderer.testPalette();
+				renderer.testPalette();
 
 				timer.start();
 				renderer.render(this->sheet, this->level);
@@ -67,7 +70,7 @@ void Game::loop()
 		else
 			stop();
 
-		//std::cout << delta.getFPS() << '\n';
+		std::cout << delta.getFPS() << '\n';
 
 		delta.wait(this->frameRate);
 	}

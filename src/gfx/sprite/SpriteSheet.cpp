@@ -35,7 +35,7 @@ void SpriteSheet::loadFromFile(const std::string& fileName)
 
 		// iterate by 4 since here we'll only care about the value of one color channel
 		// that being R, and not G, B, or A
-		for (int i = 0; i < SHEET_SIZE; ++i)
+		for (int i = 0; i < SHEET_SIZE * PIXELS_PER_BYTE; ++i)
 		{
 			imagePixel = *(spriteSheetBuffer.getPixelsPtr() + (i * NUM_CHANNELS));	// could prolly optimize with i << 2
 
@@ -48,5 +48,7 @@ void SpriteSheet::loadFromFile(const std::string& fileName)
 
 const uint8_t SpriteSheet::getPixel(const uint16_t x, const uint16_t y, const uint8_t i) const
 {
-	return (this->data[x + (y * SHEET_WIDTH)] & (DETERMINING_BITS >> (i * PIXEL_BIT_DEPTH))) >> (((PIXELS_PER_BYTE - 1) - i) * PIXEL_BIT_DEPTH);
+	const int index{ x + (y * SHEET_WIDTH) };
+
+	return (this->data[index] & (DETERMINING_BITS >> (i * PIXEL_BIT_DEPTH))) >> (((PIXELS_PER_BYTE - 1) - i) * PIXEL_BIT_DEPTH);
 }

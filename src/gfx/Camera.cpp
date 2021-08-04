@@ -17,21 +17,17 @@ void Camera::centerOn(const Vec2i& point)
 
 const bool Camera::isInView(const Sprite& s) const
 {
-	const int rw{ renderer.getBufferWidth() / 2 };
-	const int rh{ renderer.getBufferHeight() / 2 };
-
-	const AABB fieldOfView{ pos.x - rw, pos.y - rh, pos.x + rw, pos.y + rh };
-	const AABB spriteVisibleBounds{ s.x, s.y, s.w, s.h };
-
-	return AABB::collide(fieldOfView, spriteVisibleBounds);
+	return this->isInView( AABB{ s.x, s.y, s.w, s.h } );
 }
 
 const bool Camera::isInView(const AABB& s) const
 {
-	return false;
-	//const AABB sprite{ (s.x, s.y, s.w, s.h) };
-	//
-	//return this->isInView(sprite);
+	const int rw{ renderer.getBufferWidth() / 2 };
+	const int rh{ renderer.getBufferHeight() / 2 };
+
+	const AABB fieldOfView{ pos.x - rw, pos.y - rh, pos.x + rw, pos.y + rh };
+
+	return AABB::collide(fieldOfView, s);
 }
 
 const Vec2i Camera::getDimensions() const

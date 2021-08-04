@@ -24,5 +24,6 @@ add dt based gamespeed stuff
 fix horrendous lag
 fix timer
 minimap
-fix centerChunk stuff in World's chunk loading
++ fix centerChunk stuff in World's chunk loading
 optimize tile rendering by storing tile sprite directions in memory
+move TileFlavors to be inside of SpriteSheet, or atleast make more sense

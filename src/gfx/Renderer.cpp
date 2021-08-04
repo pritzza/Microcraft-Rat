@@ -42,12 +42,12 @@ void Renderer::render
 
 	// xy is offset of where sprite is being drawn on the buffer
 	// ixy is the coord of the spritesheet pixel iterator
-	for (uint8_t ix = 0; ix < s.w; ++ix)
-		for (uint8_t iy = 0; iy < s.h; ++iy)
+	for (int iy = 0; iy < s.h; ++iy)
+		for (int ix = 0; ix < s.w; ++ix)
 		{
 			// current pixel's spritesheet x y pos
-			const uint8_t shx = ((xFlip ? (s.x + s.w - ix - 1) : s.x + ix) + displacement.x) / SpriteSheet::getPixelsPerByte();
-			const uint8_t shy =  (yFlip ? (s.y + s.h - iy - 1) : s.y + iy) + displacement.y;
+			const int shx = ((xFlip ? (s.x + s.w - ix - 1) : s.x + ix) + displacement.x) / SpriteSheet::getPixelsPerByte();
+			const int shy =  (yFlip ? (s.y + s.h - iy - 1) : s.y + iy) + displacement.y;
 
 			const Vec2i& placingPixelPositon{ (coords + Vec2i{ ix, iy }) - this->camera.getPos() };
 
@@ -55,6 +55,7 @@ void Renderer::render
 				placingPixelPositon,
 				cp.getColors()
 				[
+					// can multiply/divide skx and sky to scale
 					(sheet.getPixel(shx, shy, ix % SpriteSheet::getPixelsPerByte()))
 				]
 			);
@@ -64,49 +65,65 @@ void Renderer::render
 void Renderer::render(const SpriteSheet& sheet, const World& world)
 {
 	for (const auto& [coords, chunk] : world.getChunks())
-		for (int i = 0; i < Chunk::getSize(); ++i)
-		{
-			// tiny abbreviations
-			static constexpr int CHUNK_LEN{ Chunk::getLength() };
-			static constexpr int TILE_DIM{ TileData::SPRITE_DIMENSIONS };
-
-			// get tileNase's sprite and palette
-			const SpriteSheet::SpriteID& tileBaseSpriteID{ TileBases::getBase(chunk.getTileBaseID(i)).spriteID };
-			const ColorPalette& tileBaseColorPalette{ TileBases::getBase(chunk.getTileBaseID(i)).colorPalette };
-
-			// get tileFeature's sprite and palette
-			const bool isTileFeatureValid{ chunk.getTileFeatueID(i) != TileFeatures::ID::None };
-			const SpriteSheet::SpriteID& tileFeatureSpriteID{ TileFeatures::getFeature(chunk.getTileFeatueID(i)).spriteID };
-			const ColorPalette& tileFeatureColorPalette{ TileFeatures::getFeature(chunk.getTileFeatueID(i)).colorPalette };
-
-			static constexpr int tileLen{ SpriteSheet::getSprite(SpriteSheet::SpriteID::GroundTileBase).w };
-
-			// tile is drawn in accordance to its position within its chunk, and that respective
-			// chunks position in the world
-			for (int j = 0; j < TILE_DIM * TILE_DIM; ++j)
+		//if (this->camera.isInView(Chunk::getAABB(coords)))
+			for (int i = 0; i < Chunk::getSize(); ++i)
 			{
-				// positional offset from chunk to chunk
-				const Vec2i chunkOffset{ coords * tileLen * CHUNK_LEN * TILE_DIM };
+				// get tileNase's sprite and palette
+				const SpriteSheet::SpriteID& tileBaseSpriteID{ TileBases::getBase(chunk.getTileBaseID(i)).spriteID };
+				const ColorPalette& tileBaseColorPalette{ TileBases::getBase(chunk.getTileBaseID(i)).colorPalette };
 
-				// positional offset from tile to tile
-				const Vec2i tileOffset{ Vec2i::toVector(i, CHUNK_LEN, CHUNK_LEN) * tileLen * TILE_DIM };
+				// get tileFeature's sprite and palette
+				const bool isTileFeatureValid{ chunk.getTileFeatureID(i) != TileFeatures::ID::None };
+				const SpriteSheet::SpriteID& tileFeatureSpriteID{ TileFeatures::getFeature(chunk.getTileFeatureID(i)).spriteID };
+				const ColorPalette& tileFeatureColorPalette{ TileFeatures::getFeature(chunk.getTileFeatureID(i)).colorPalette };
 
-				// positional offset from tile sprite to tile sprite (tile is made up for 4 sprites)
-				const Vec2i tileSpriteOffset{ Vec2i::toVector(j, TILE_DIM, TILE_DIM) * tileLen };
+				// tiny abbreviations:
+					// LEN is the length the the tile's sprite in pixels in the spritesheet
+					// DIM is the ammount of "tile components" in one axis that make up a tile
+				static constexpr int TILE_LEN{ SpriteSheet::getSprite(SpriteSheet::SpriteID::GroundTileBaseStart).w };
+				static constexpr int TILE_DIM{ TileData::DIMENSION };
+				static constexpr int CHUNK_LEN{ Chunk::getLength() };
 
-				const Vec2i& pos{ chunkOffset + tileOffset + tileSpriteOffset };
+				// tile is drawn in accordance to its position within its chunk, and that respective
+				// chunks position in the world
+				for (int j = 0; j < TileData::NUM_COMPONENTS; ++j)
+				{
+					// positional offset from chunk to chunk
+					const Vec2i chunkOffset{ coords * TILE_LEN * CHUNK_LEN * TILE_DIM };
 
-				const DetailedDirection d{ world.getTileDirection(coords, Vec2i::toVector(i, CHUNK_LEN, CHUNK_LEN), j) };
+					// positional offset from tile to tile
+					const Vec2i tileOffset{ Vec2i::toVector(i, CHUNK_LEN, CHUNK_LEN) * TILE_LEN * TILE_DIM };
 
-				// + 1 so that d 0,0 is the center of the tilesprite in the actual spritesheet
-				const Vec2i cropOffset{ (Directions::toVector(d) + 1) * tileLen };
+					// positional offset from tile sprite to tile sprite (tile is made up for 4 sprites)
+					const Vec2i tileSpriteOffset{ Vec2i::toVector(j, TILE_DIM, TILE_DIM) * TILE_LEN};
 
-				this->render(sheet, tileBaseSpriteID, pos, tileBaseColorPalette, RenderFlag::NONE, cropOffset);
+					const Vec2i& pos{ chunkOffset + tileOffset + tileSpriteOffset };
 
-				if (isTileFeatureValid)
-					this->render(sheet, tileFeatureSpriteID, pos, tileFeatureColorPalette, RenderFlag::NONE, cropOffset);
+					const DetailedDirection d{ world.getTileDirection(coords, Vec2i::toVector(i, CHUNK_LEN, CHUNK_LEN), j) };
+
+					const Vec2i flavorCropOffset{ Vec2i::toVector(static_cast<int>(chunk.getTile(i).flavors[j]) - 2, TileFlavor::DIMENSION, TileFlavor::DIMENSION) };
+					Vec2i baseCropOffset{0,0};
+
+					// only give tilebase flavor if
+					if (
+						d == DetailedDirection::Center									// is a center tile
+						&& chunk.getTile(i).flavors[j] != TileFlavor::Value::None &&	// has a flavor value
+						TileBases::getBase(chunk.getTileBaseID(coords)).hasFlavors		// tileBase supports flavors
+						)
+						baseCropOffset = (SpriteSheet::getTileFlavorOffset() + flavorCropOffset) * TILE_LEN;
+					else	// else, give non flavor crop (directional based) 
+						baseCropOffset = (Directions::toVector(d) + SpriteSheet::getTileCenterOffset()) * TILE_LEN;
+
+					const bool isFeatureFlavored{ TileFeatures::getFeature(chunk.getTileFeatureID(coords)).hasFlavors };
+
+					const Vec2i featureCropOffset{ flavorCropOffset * isFeatureFlavored * TILE_LEN };
+
+					this->render(sheet, tileBaseSpriteID, pos, tileBaseColorPalette, RenderFlag::NONE, baseCropOffset);
+
+					if (isTileFeatureValid && chunk.getTile(i).featurePlacement[j])
+						this->render(sheet, tileFeatureSpriteID, pos, tileFeatureColorPalette, RenderFlag::NONE, featureCropOffset);
+				}
 			}
-		}
 }
 
 void Renderer::render(const SpriteSheet& sheet, const Level& level)

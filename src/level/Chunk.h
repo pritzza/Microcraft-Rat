@@ -37,14 +37,16 @@ public:
 	void setTileFeature(const Vec2i& coords, const TileFeatures::ID id) { tiles[Vec2i::toIndex(coords, LENGTH, LENGTH)].featureID = id;	  }
 
 	// getters
+	Tile& getTile(const uint16_t i)										{ return tiles[i];							  					  }
+	Tile& getTile(const Vec2i& coords)									{ return tiles[Vec2i::toIndex(coords, LENGTH, LENGTH)];			  }
 	const Tile& getTile(const uint16_t i) const							{ return tiles[i];							  					  }
 	const Tile& getTile(const Vec2i& coords) const						{ return tiles[Vec2i::toIndex(coords, LENGTH, LENGTH)];			  }
 
 	const TileBases::ID getTileBaseID(const uint16_t i) const			{ return tiles[i].baseID;										  }
 	const TileBases::ID getTileBaseID(const Vec2i& coords) const		{ return tiles[Vec2i::toIndex(coords, LENGTH, LENGTH)].baseID;    }
 
-	const TileFeatures::ID getTileFeatueID(const uint16_t i) const		{ return tiles[i].featureID;									  }
-	const TileFeatures::ID getTileFeatueID(const Vec2i& coords) const	{ return tiles[Vec2i::toIndex(coords, LENGTH, LENGTH)].featureID; }
+	const TileFeatures::ID getTileFeatureID(const uint16_t i) const		{ return tiles[i].featureID;									  }
+	const TileFeatures::ID getTileFeatureID(const Vec2i& coords) const	{ return tiles[Vec2i::toIndex(coords, LENGTH, LENGTH)].featureID; }
 
 	inline static constexpr int getLength() { return LENGTH; }
 	inline static constexpr int getSize()	{ return SIZE;	 }
@@ -52,7 +54,16 @@ public:
 	// returns length of chunk in pixels
 	inline static constexpr int getPixelLength() 
 	{
-		return LENGTH * TileData::SPRITE_DIMENSIONS * SpriteSheet::getSprite(SpriteSheet::SpriteID::GroundTileBase).w;
+		return LENGTH * TileData::DIMENSION * SpriteSheet::getSprite(SpriteSheet::SpriteID::GroundTileBaseStart).w;
+	}
+
+	// returns bounding box of chunk
+	inline static constexpr AABB getAABB(const Vec2i& coords)
+	{
+		const Vec2i startPos{ coords * Chunk::getPixelLength() };
+		const Vec2i dimensions{ Chunk::getPixelLength(), Chunk::getPixelLength() };
+
+		return AABB{ startPos.x, startPos.y, dimensions.x, dimensions.y };
 	}
 
 };

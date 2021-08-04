@@ -9,7 +9,8 @@
 struct TileData
 {
 public:
-	static constexpr int SPRITE_DIMENSIONS{ 2 };
+	static constexpr int DIMENSION{ 2 };
+	static constexpr int NUM_COMPONENTS{ DIMENSION * DIMENSION };
 
 public:
 	SpriteSheet::SpriteID spriteID;

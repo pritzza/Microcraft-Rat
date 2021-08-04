@@ -16,29 +16,29 @@ struct Vec2i
 	void print() const;
 
 	// operator overloads
-	bool operator==(const Vec2i& a) const {
+	constexpr bool operator==(const Vec2i& a) const {
 		return a.x == x && a.y == y;
 	}
 
-	void operator%=(const int modulator)
+	constexpr void operator%=(const int modulator)
 	{
 		this->x %= modulator;
 		this->y %= modulator;
 	}
 
-	void operator+=(const Vec2i& other)
+	constexpr void operator+=(const Vec2i& other)
 	{
 		this->x += other.x;
 		this->y += other.y;
 	}
 
-	Vec2i operator+(const Vec2i& other) const	{ return Vec2i{ x + other.x,	 y + other.y	}; }
-	Vec2i operator-(const Vec2i& other) const	{ return Vec2i{ x - other.x,	 y - other.y	}; }
+	constexpr Vec2i operator+(const Vec2i& other) const	{ return Vec2i{ x + other.x,	 y + other.y	}; }
+	constexpr Vec2i operator-(const Vec2i& other) const	{ return Vec2i{ x - other.x,	 y - other.y	}; }
 
-	Vec2i operator*(const int multiplier) const { return Vec2i{ x * multiplier,  y * multiplier }; }
-	Vec2i operator/(const int divisor) const	{ return Vec2i{ x / divisor,	 y / divisor	}; }
-	Vec2i operator+(const int addend) const		{ return Vec2i{ x + addend,		 y + addend		}; }
-	Vec2i operator-(const int subtractor) const { return Vec2i{ x - subtractor,  y - subtractor }; }
+	constexpr Vec2i operator*(const int multiplier) const { return Vec2i{ x * multiplier,  y * multiplier }; }
+	constexpr Vec2i operator/(const int divisor) const	{ return Vec2i{ x / divisor,	 y / divisor	}; }
+	constexpr Vec2i operator+(const int addend) const		{ return Vec2i{ x + addend,		 y + addend		}; }
+	constexpr Vec2i operator-(const int subtractor) const { return Vec2i{ x - subtractor,  y - subtractor }; }
 
 	// static functions
 	static inline constexpr int toIndex(const Vec2i& vec, const int w, const int h)
