@@ -66,7 +66,7 @@ void World::generateChunk(const Vec2i& chunkCoord)
 	//this->perlinNoise.reseed(terrainSeed);
 
 	// between 0.1 and 64
-	static constexpr double FREQUENCY{ 8.f };	
+	static constexpr double FREQUENCY{ 8.f };
 
 	const Vec2i tileOffset{ chunkCoord * Chunk::getLength() };
 
@@ -98,14 +98,33 @@ void World::generateChunk(const Vec2i& chunkCoord)
 
 				if (tile.baseID == TileBases::ID::Grass)
 				{
+					// try to spawn flower
 					if (rng.getNum(0, 8) == 0)
 					{
 						tile.featureID = TileFeatures::ID::Flower;
 						tile.featurePlacement[i] = true;
 					}
+
+					// try to spawn tree
+					if (rng.getNum(0, 8) == 0)
+					{
+						tile.featureID = TileFeatures::ID::Tree;
+						tile.featurePlacement[i] = true;
+					}
 				}
 			}
 		}
+
+	// attempt at assigning direction upon generating tile
+	//for (int i = 0; i < TileData::NUM_COMPONENTS; ++i)
+	//{
+	//	Tile& tile{ chunk.getTile(i) };
+	//
+	//	const Vec2i tileCoord{ Vec2i::toVector(i, Chunk::getLength(), Chunk::getLength()) };
+	//
+	//	for (int j = 0; j < TileData::NUM_COMPONENTS; ++j)
+	//		tile.directions[j] = this->getTileDirection(chunkCoord, tileCoord, j);
+	//}
 }
 
 void World::loadChunk(const Vec2i& pos)
@@ -161,10 +180,7 @@ const DetailedDirection World::getTileDirection(const Vec2i& chunkPos, const Vec
 	// if the chunk containing the tile isnt loaded, return this TileCrop
 	static constexpr DetailedDirection DEFAULT_TILE_CROP{ DetailedDirection::Center };
 
-	if (this->chunks.find(chunkPos) == this->chunks.end())
-		return DEFAULT_TILE_CROP;
-	else
-	{
+
 		DetailedDirection direction{ DetailedDirection::Center };
 
 		const TileBases::ID baseTileID{ this->chunks.at(chunkPos).getTileBaseID(tilePos) };
@@ -192,5 +208,5 @@ const DetailedDirection World::getTileDirection(const Vec2i& chunkPos, const Vec
 		}
 
 		return direction;
-	}
+	
 }

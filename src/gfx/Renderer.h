@@ -12,10 +12,15 @@
 #include "Camera.h"
 
 class ColorPalette;
+
 struct Vec2i;
-struct Chunk;
+
 class Level;
+struct Chunk;
 class World;
+class Tile;
+
+enum class DetailedDirection;
 
 enum class RenderFlag
 {
@@ -47,6 +52,10 @@ private:
 private:
 	void generateColorPalette();	// 6 for loops for each color channel
 
+	// functions for render(world)
+	const Vec2i getTileComponentSpritePosition(const Vec2i& chunkCoord, const int tileIndex, const int tileComponentIndex) const;
+	const Vec2i getTileBaseCropOffset(const DetailedDirection& dir, const Tile& tile, const int compIndex, const Vec2i& flavorCropOffset) const;
+
 public:
 	Renderer(const uint16_t width, const uint16_t height);
 
@@ -72,16 +81,16 @@ public:
 
 	void testPalette();
 
-	inline Camera& getCamera() { return this->camera; }
+	inline Camera& getCamera()									{ return this->camera;			  }
 
 	const int getPaletteIndex(const Color& c) const;
 
-	inline const Color getPaletteColor(const uint16_t i) const { return this->colorPalette[i]; }
+	inline const Color getPaletteColor(const uint16_t i) const  { return this->colorPalette[i];   }
 
-	inline const sf::Image& getBuffer() const { return this->buffer; }
-	inline const uint16_t getBufferWidth() const { return this->bufferWidth; }
-	inline const uint16_t getBufferHeight() const { return this->bufferHeight; }
+	inline const sf::Image& getBuffer() const					{ return this->buffer;			  }
+	inline const uint16_t getBufferWidth() const				{ return this->bufferWidth;		  }
+	inline const uint16_t getBufferHeight() const				{ return this->bufferHeight;	  }
 
-	inline static constexpr uint8_t getTransparentColor() { return TRANSPARENT_COLOR_INDEX; }
+	inline static constexpr uint8_t getTransparentColor()		{ return TRANSPARENT_COLOR_INDEX; }
 
 };

@@ -33,7 +33,8 @@ private:
 	static constexpr uint8_t SPRITE_LENGTH{ 8 };	// px; used for locating and cropping sprites
 
 	static constexpr Vec2i TILE_CENTER_OFFSET{ 1, 1 };
-	static constexpr Vec2i TILE_FLAVOR_OFFSET{ 0, 3 };
+	static constexpr Vec2i TILE_BASE_FLAVOR_OFFSET{ 0, 3 };
+	static constexpr Vec2i TILE_FEATURE_FLAVOR_OFFSET{ 2, -1 };
 
 private:
 	enum Coords
@@ -49,6 +50,10 @@ private:
 		// flower feature
 		FLOWER_FEATURE_START_X = 0 * SPRITE_LENGTH,
 		FLOWER_FEATURE_START_Y = 9 * SPRITE_LENGTH,
+
+		// tree feature
+		TREE_FEATURE_START_X = 0 * SPRITE_LENGTH,
+		TREE_FEATURE_START_Y = 12 * SPRITE_LENGTH,
 	};
 	enum Dimensions
 	{
@@ -58,13 +63,22 @@ private:
 
 		// all tile dimensions
 		TILE_W = 1 * SPRITE_LENGTH,
-		TILE_H = TILE_W
+		TILE_H = TILE_W,
+
+		// small features that take up 1 tile component
+		SMALL_TILE_FEATURE_W = TILE_W,
+		SMALL_TILE_FEATURE_H = TILE_H,
+
+		// large features that take up all 4 tile components/ a full tile
+		LARGE_TILE_FEATURE_W = TILE_W * 2,
+		LARGE_TILE_FEATURE_H = TILE_H * 2,
 	};
 	static constexpr Sprite SPRITES[]
 	{
-		{ SPRITE_X,			       SPRITE_Y,			   SPRITE_W,	SPRITE_H    },	// 0
-		{ GROUND_BASE_START_X,     GROUND_BASE_START_Y,	   TILE_W,		TILE_H		},	// 1
-		{ FLOWER_FEATURE_START_X,  FLOWER_FEATURE_START_Y, TILE_W,		TILE_H		},	// 2
+		{ SPRITE_X,			       SPRITE_Y,			   SPRITE_W,			 SPRITE_H				},	// 0
+		{ GROUND_BASE_START_X,     GROUND_BASE_START_Y,	   TILE_W,				 TILE_H					},	// 1
+		{ FLOWER_FEATURE_START_X,  FLOWER_FEATURE_START_Y, SMALL_TILE_FEATURE_H, SMALL_TILE_FEATURE_W	},	// 2
+		{ TREE_FEATURE_START_X,	   TREE_FEATURE_START_Y,   LARGE_TILE_FEATURE_H, LARGE_TILE_FEATURE_W	},	// 3
 	};
 	
 	static constexpr uint16_t NUM_SPRITES{ sizeof(SPRITES) / sizeof(Sprite) };
@@ -74,7 +88,8 @@ public:
 	{
 		Sprite,					// 0
 		GroundTileBaseStart,	// 1
-		FlowerTileFeatureStart	// 2
+		FlowerTileFeatureStart,	// 2
+		TreeTileFeatureStart,	// 3
 	};
 
 private:
@@ -92,15 +107,20 @@ public:
 	}
 	
 	// returns 2 bit pixel at index of xy coord
-	const uint8_t getPixel(const uint16_t x, const uint16_t y, const uint8_t i) const;
+	inline const uint8_t getPixel(const uint16_t x, const uint16_t y, const uint8_t i) const
+	{
+		const int index{ x + (y * SHEET_WIDTH) };
+		return (this->data[index] & (DETERMINING_BITS >> (i * PIXEL_BIT_DEPTH))) >> (((PIXELS_PER_BYTE - 1) - i) * PIXEL_BIT_DEPTH);
+	}
 
-	inline const uint8_t* const getData() const		   { return this->data;		 }
+	inline const uint8_t* const getData() const					{ return this->data;				 }
 
-	inline static constexpr uint16_t getHeight()	   { return SHEET_HEIGHT;	 }
-	inline static constexpr uint16_t getWidth()		   { return SHEET_WIDTH;	 }
-	inline static constexpr uint8_t getPixelsPerByte() { return PIXELS_PER_BYTE; }
+	inline static constexpr uint16_t getHeight()				{ return SHEET_HEIGHT;				 }
+	inline static constexpr uint16_t getWidth()					{ return SHEET_WIDTH;				 }
+	inline static constexpr uint8_t getPixelsPerByte()			{ return PIXELS_PER_BYTE;			 }
 
-	inline static constexpr Vec2i getTileCenterOffset() { return TILE_CENTER_OFFSET; }
-	inline static constexpr Vec2i getTileFlavorOffset() { return TILE_FLAVOR_OFFSET; }
+	inline static constexpr Vec2i getTileCenterOffset()			{ return TILE_CENTER_OFFSET;		 }
+	inline static constexpr Vec2i getTileBaseFlavorOffset()		{ return TILE_BASE_FLAVOR_OFFSET;	 }
+	inline static constexpr Vec2i getTileFeatureFlavorOffset()	{ return TILE_FEATURE_FLAVOR_OFFSET; }
 
 };

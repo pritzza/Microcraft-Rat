@@ -16,4 +16,10 @@ public:
 		Three,
 		Four
 	};
+
+	inline static constexpr int toIndex(const Value v)
+	{
+		// in terms of index, Value::None and Value::One should be the same
+		return static_cast<int>(v) - (static_cast<int>(v) > static_cast<int>(Value::None));
+	}
 };

@@ -45,10 +45,3 @@ void SpriteSheet::loadFromFile(const std::string& fileName)
 		}
 	}
 }
-
-const uint8_t SpriteSheet::getPixel(const uint16_t x, const uint16_t y, const uint8_t i) const
-{
-	const int index{ x + (y * SHEET_WIDTH) };
-
-	return (this->data[index] & (DETERMINING_BITS >> (i * PIXEL_BIT_DEPTH))) >> (((PIXELS_PER_BYTE - 1) - i) * PIXEL_BIT_DEPTH);
-}

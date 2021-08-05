@@ -22,7 +22,8 @@ Game::Game(
 void Game::loop()
 {
 	Vec2i cameraCenter{ 0,0 };
-	DeltaTime timer;
+	DeltaTime levelRenderTimer;
+	DeltaTime levelUpdateTimer;
 
 	while (isRunning)
 	{
@@ -49,18 +50,20 @@ void Game::loop()
 
 				// update
 				
+				levelUpdateTimer.start();
 				this->level.update(renderer.getCamera());
-
+				levelUpdateTimer.stop();
+				//std::cout << "level update: " << levelUpdateTimer.getPT() << '\n';
 				//camPos.print();
 				//centerChunk.print();
 
 				// render
-				renderer.testPalette();
+				//renderer.testPalette();
 
-				timer.start();
+				levelRenderTimer.start();
 				renderer.render(this->sheet, this->level);
-				timer.stop();
-				//std::cout << timer.getPT() << '\n';
+				levelRenderTimer.stop();
+				//std::cout << "level render: " << levelRenderTimer.getPT() << '\n';
 
 				renderer.render(this->sheet, SpriteSheet::SpriteID::Sprite, Vec2i{69, 69}, ColorPalette(renderer, 224, true));
 
@@ -70,7 +73,7 @@ void Game::loop()
 		else
 			stop();
 
-		std::cout << delta.getFPS() << '\n';
+		std::cout << "FPS: " << delta.getFPS() << '\n';
 
 		delta.wait(this->frameRate);
 	}

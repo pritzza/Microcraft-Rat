@@ -42,6 +42,15 @@ ColorPalette::ColorPalette(const Renderer& renderer, const uint16_t fillColorInt
 	}
 }
 
+const bool ColorPalette::containsTransparency() const
+{
+	for (int i = 0; i < NUM_COLORS; ++i)
+		if (colors[i] == Renderer::getTransparentColor())
+			return true;
+
+	return false;
+}
+
 void ColorPalette::setColors(const uint16_t ci1, const uint16_t ci2, const uint16_t ci3, const uint16_t ci4)
 {
 	colors[0] = parseIntColorToIndex(ci1);
@@ -54,6 +63,7 @@ void ColorPalette::setColor(const uint8_t ci, const uint16_t color)
 {
 	colors[ci] = parseIntColorToIndex(color);
 }
+
 
 // idea on how to make colors
 //2<<RED | 3<<GREEN | 5<<BLUE

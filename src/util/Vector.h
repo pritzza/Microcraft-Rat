@@ -8,9 +8,16 @@ struct Vec2i
 {
 	int x, y;
 
-	constexpr Vec2i(const int x, const int y):
+	constexpr Vec2i(const int x, const int y)
+		:
 		x{ x },
 		y{ y }
+	{}
+
+	constexpr Vec2i(const Vec2i& other)
+		:
+		x{ other.x },
+		y{ other.y }
 	{}
 
 	void print() const;

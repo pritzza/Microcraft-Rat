@@ -35,6 +35,8 @@ public:
 	// creates a color pallet based on a single color
 	ColorPalette(const Renderer& renderer, const uint16_t fillColorInt, const bool opaque, const uint8_t saturationRange = 0);
 
+	const bool containsTransparency() const;
+
 	void setColors(const uint16_t c1, const uint16_t c2, const uint16_t c3, const uint16_t c4);
 	void setColor(const uint8_t ci, const uint16_t color);
 
