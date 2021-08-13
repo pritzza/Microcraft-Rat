@@ -13,11 +13,11 @@ public:
 	static constexpr int NUM_COMPONENTS{ DIMENSION * DIMENSION };
 
 public:
-	SpriteSheet::SpriteID spriteID;
+	SpriteID spriteID;
 	ColorPalette colorPalette;
 
 private:
-	TileData(const SpriteSheet::SpriteID spriteID, const ColorPalette colorPalette)
+	TileData(const SpriteID spriteID, const ColorPalette colorPalette)
 		:
 		spriteID{spriteID},
 		colorPalette{colorPalette}

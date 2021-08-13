@@ -12,7 +12,7 @@ Camera::Camera(const Renderer& renderer)
 
 void Camera::centerOn(const Vec2i& point)
 {
-	this->pos = point;
+	this->pos = point - Vec2i{ renderer.getBufferWidth(), renderer.getBufferHeight() } / 2;
 }
 
 const bool Camera::isInView(const Sprite& s) const

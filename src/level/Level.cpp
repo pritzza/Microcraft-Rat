@@ -7,7 +7,7 @@ Level::Level(const Vec2i windowDimensions)
 	world{0,0}
 {}
 
-void Level::update(const Camera& camera)
+void Level::update(const double dt, const Camera& camera)
 {
-	this->world.update(camera);
+	this->world.update(dt, camera);
 }

@@ -12,14 +12,18 @@ public:
 	//int height
 	// Tool toolToBreak;
 
+	double animationTickRate;	// rate at which the flavor is incrimented (if it has one) in seconds
+
 private:
-	TileFeatureData(const SpriteSheet::SpriteID spriteID, const ColorPalette colorPalette,
+	TileFeatureData(const SpriteID spriteID, const ColorPalette colorPalette,
+		const double animationTickRate,
 		const bool hasFlavors,
 		const bool isSolid,
 		const bool isPlaceableOnEdges,
 		const bool isSmall)
 		:
 		TileData{ spriteID, colorPalette },
+		animationTickRate{ animationTickRate },
 		hasFlavors{ hasFlavors },
 		isSolid{ isSolid },
 		isPlaceableOnEdges{ isPlaceableOnEdges },

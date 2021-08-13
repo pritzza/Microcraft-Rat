@@ -7,19 +7,41 @@ public:
 	static constexpr int DIMENSION{ 2 };
 	static constexpr int NUM_FLAVORS{ (DIMENSION * DIMENSION) + 1 };
 
-public:
-	enum class Value
-	{
-		None,
-		One,
-		Two,
-		Three,
-		Four
-	};
+	static constexpr int NO_FLAVOR{ 0 };
 
-	inline static constexpr int toIndex(const Value v)
+private:
+	int value{ NO_FLAVOR };
+
+public:
+
+	inline constexpr void disableFlavor()
 	{
-		// in terms of index, Value::None and Value::One should be the same
-		return static_cast<int>(v) - (static_cast<int>(v) > static_cast<int>(Value::None));
+		this->value = NO_FLAVOR;
 	}
+
+	inline constexpr void setValue(const int v)
+	{
+		if (v < NO_FLAVOR)
+			this->value = NO_FLAVOR;
+		else
+			this->value = v % NUM_FLAVORS;
+	}
+
+	inline constexpr int getValue() const
+	{	
+		return this->value;
+	}
+
+	inline constexpr bool hasFlavor() const
+	{
+		return this->value != NO_FLAVOR;
+	}
+
+	inline constexpr int operator+(TileFlavor other) const
+	{
+		other.setValue(value + other.getValue());
+
+		return other.getValue();
+	}
+
 };

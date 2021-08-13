@@ -39,13 +39,13 @@ struct Vec2i
 		this->y += other.y;
 	}
 
-	constexpr Vec2i operator+(const Vec2i& other) const	{ return Vec2i{ x + other.x,	 y + other.y	}; }
-	constexpr Vec2i operator-(const Vec2i& other) const	{ return Vec2i{ x - other.x,	 y - other.y	}; }
+	constexpr Vec2i operator+(const Vec2i& other) const		{ return Vec2i{ x + other.x,	 y + other.y	}; }
+	constexpr Vec2i operator-(const Vec2i& other) const		{ return Vec2i{ x - other.x,	 y - other.y	}; }
 
-	constexpr Vec2i operator*(const int multiplier) const { return Vec2i{ x * multiplier,  y * multiplier }; }
-	constexpr Vec2i operator/(const int divisor) const	{ return Vec2i{ x / divisor,	 y / divisor	}; }
+	constexpr Vec2i operator*(const int multiplier) const	{ return Vec2i{ x * multiplier,  y * multiplier }; }
+	constexpr Vec2i operator/(const int divisor) const		{ return Vec2i{ x / divisor,	 y / divisor	}; }
 	constexpr Vec2i operator+(const int addend) const		{ return Vec2i{ x + addend,		 y + addend		}; }
-	constexpr Vec2i operator-(const int subtractor) const { return Vec2i{ x - subtractor,  y - subtractor }; }
+	constexpr Vec2i operator-(const int subtractor) const	{ return Vec2i{ x - subtractor,  y - subtractor }; }
 
 	// static functions
 	static inline constexpr int toIndex(const Vec2i& vec, const int w, const int h)

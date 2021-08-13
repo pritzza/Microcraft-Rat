@@ -13,50 +13,19 @@ World::World(const int terrainSeed, const int tileSeed)
 {
 }
 
-void World::update(const Camera& camera)
+void World::update(const double dt, const Camera& camera)
 {
-	// some aliases for more readability
-	const Vec2i& camDim{ camera.getDimensions() };
-	const Vec2i& camPos{ camera.getPos() };
-	constexpr int chunkLen{ Chunk::getPixelLength() };
-
 	static constexpr int LOAD_DISTANCE{ 2 };
 
-	// the number of chunks that are loaded and being updated in the x and y axis around the camera
-	const Vec2i chunksLoaded{ (camDim / chunkLen) + LOAD_DISTANCE };
+	this->loadSurroundingChunks(camera, LOAD_DISTANCE);
+	this->unloadOutOfViewChunks(camera, LOAD_DISTANCE);
 
-	// if camera's coords are negative, they become off by 1 cause of some funky division
-	const Vec2i negativeCompensation{ camPos.x < -chunkLen, camPos.y < -chunkLen/2 };
+	time += dt;
 
-	const Vec2i centerChunk{ ((camPos + (camDim / 2)) / chunkLen) - negativeCompensation };
+	for (auto& [coord, chunk] : this->chunks)
+		for (int i = 0; i < Chunk::getSize(); ++i)
+			chunk.getTile(i).update(time);
 
-	// load surrounding chunks
-	for (int x = 0; x < chunksLoaded.x; ++x)
-		for (int y = 0; y < chunksLoaded.y; ++y)
-		{
-			const Vec2i inRangeChunkCoords
-			{
-				(centerChunk.x - (chunksLoaded.x / 2)) + x,
-				(centerChunk.y - (chunksLoaded.y / 2)) + y + (camPos.y % chunkLen > chunkLen / 2)	// to accomidate the closer chunk
-			};
-
-			if (chunks.find(inRangeChunkCoords) == chunks.end())
-				loadChunk(inRangeChunkCoords);
-		}
-
-	// update or unload further chunks
-	for (const auto& [coords, chunk] : this->chunks)
-	{
-		const AABB chunkBounds
-		{
-			coords.x * Chunk::getPixelLength(),
-			coords.y * Chunk::getPixelLength(),
-			Chunk::getPixelLength() - 1,
-			Chunk::getPixelLength() - 1
-		};
-
-		//if(AABB::isPointInside(coords,))
-	}
 }
 
 void World::generateChunk(const Vec2i& chunkCoord)
@@ -94,7 +63,7 @@ void World::generateChunk(const Vec2i& chunkCoord)
 
 			for (int i = 0; i < TileData::NUM_COMPONENTS; ++i)
 			{
-				tile.flavors[i] = static_cast<TileFlavor::Value>(rng.getNum(0, TileFlavor::NUM_FLAVORS));
+				tile.flavors[i].setValue(rng.getNum(0, TileFlavor::NUM_FLAVORS));
 
 				if (tile.baseID == TileBases::ID::Grass)
 				{
@@ -125,6 +94,53 @@ void World::generateChunk(const Vec2i& chunkCoord)
 	//	for (int j = 0; j < TileData::NUM_COMPONENTS; ++j)
 	//		tile.directions[j] = this->getTileDirection(chunkCoord, tileCoord, j);
 	//}
+}
+
+void World::unloadOutOfViewChunks(const Camera& camera, const int loadDistance)
+{
+	// update or unload further chunks
+	for (const auto& [coord, chunk] : this->chunks)
+	{
+		const AABB chunkBounds
+		{
+			coord.x * Chunk::getPixelLength(),
+			coord.y * Chunk::getPixelLength(),
+			Chunk::getPixelLength() - 1,
+			Chunk::getPixelLength() - 1
+		};
+
+		//if(AABB::isPointInside(coords,))
+	}
+}
+
+void World::loadSurroundingChunks(const Camera& camera, const int loadDistance)
+{
+	// some aliases for more readability
+	const Vec2i& camDim{ camera.getDimensions() };
+	const Vec2i& camPos{ camera.getPos() };
+	constexpr int chunkLen{ Chunk::getPixelLength() };
+
+	// the number of chunks that are loaded and being updated in the x and y axis around the camera
+	const Vec2i chunksLoaded{ (camDim / chunkLen) + loadDistance };
+
+	// if camera's coords are negative, they become off by 1 cause of some funky division
+	const Vec2i negativeCompensation{ camPos.x < -chunkLen, camPos.y < -chunkLen / 2 };
+
+	const Vec2i centerChunk{ ((camPos + (camDim / 2)) / chunkLen) - negativeCompensation };
+
+	// load surrounding chunks
+	for (int x = 0; x < chunksLoaded.x; ++x)
+		for (int y = 0; y < chunksLoaded.y; ++y)
+		{
+			const Vec2i inRangeChunkCoords
+			{
+				(centerChunk.x - (chunksLoaded.x / 2)) + x,
+				(centerChunk.y - (chunksLoaded.y / 2)) + y + (camPos.y % chunkLen > chunkLen / 2)	// to accomidate the closer chunk
+			};
+
+			if (chunks.find(inRangeChunkCoords) == chunks.end())
+				loadChunk(inRangeChunkCoords);
+		}
 }
 
 void World::loadChunk(const Vec2i& pos)

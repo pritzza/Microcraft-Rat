@@ -19,6 +19,12 @@ public:
 
 	// storing dir doesnt work because there are 4 dirs that need to be stored
 	DetailedDirection directions[TileData::NUM_COMPONENTS]{ DetailedDirection::Center };
-	TileFlavor::Value flavors[TileData::NUM_COMPONENTS]{ TileFlavor::Value::None };
+
+	TileFlavor flavors[TileData::NUM_COMPONENTS];
+	TileFlavor flavorBaseAnimationOffset;
+	TileFlavor flavorFeatureAnimationOffset;
+
+public:
+	void update(const double time);
 
 };

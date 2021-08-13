@@ -3,11 +3,32 @@
 #include <string>
 
 #include "../../util/Binary.h"
+#include "../../util/Direction.h"
 #include "../../util/Vector.h"
 
 #include "Sprite.h"
+#include "SpriteData.h"
+#include "AnimatedSprite.h"
 
 class Renderer;
+
+// SpriteID gives an ID to atleast the beginning of every sprite
+enum class SpriteID
+{
+	Sprite,					// 0
+	GroundTileBaseStart,	// 1
+	FlowerTileFeatureStart,	// 2
+	TreeTileFeatureStart,	// 3
+	PlayerStart				// 4
+};
+
+// AnimatedSpriteID gives IDs to all sprites that are meant to be animated
+// I'm still not sure if tiles are meant to be here since so far, the only "tile animation"
+// is a linear loop through all a tiles flavors (like water)
+enum class AnimatedSpriteID
+{
+	Player,					// 0
+};
 
 // there is one sprite sheet that will always be stored during runtime
 // it will store all the sprite data for every sprite
@@ -37,6 +58,7 @@ private:
 	static constexpr Vec2i TILE_FEATURE_FLAVOR_OFFSET{ 2, -1 };
 
 private:
+	// "start" refers to the top left most cropped piece of the sprite
 	enum Coords
 	{
 		// demo sprite
@@ -52,8 +74,12 @@ private:
 		FLOWER_FEATURE_START_Y = 9 * SPRITE_LENGTH,
 
 		// tree feature
-		TREE_FEATURE_START_X = 0 * SPRITE_LENGTH,
+		TREE_FEATURE_START_X = 6 * SPRITE_LENGTH,
 		TREE_FEATURE_START_Y = 12 * SPRITE_LENGTH,
+
+		// player animated sprite
+		PLAYER_START_X = 0 * SPRITE_LENGTH,
+		PLAYER_START_Y = 0 * SPRITE_LENGTH,
 	};
 	enum Dimensions
 	{
@@ -72,24 +98,53 @@ private:
 		// large features that take up all 4 tile components/ a full tile
 		LARGE_TILE_FEATURE_W = TILE_W * 2,
 		LARGE_TILE_FEATURE_H = TILE_H * 2,
+
+		// player animated sprite
+		PLAYER_START_W = 2 * SPRITE_LENGTH,
+		PLAYER_START_H = 2 * SPRITE_LENGTH,
 	};
-	static constexpr Sprite SPRITES[]
-	{
-		{ SPRITE_X,			       SPRITE_Y,			   SPRITE_W,			 SPRITE_H				},	// 0
-		{ GROUND_BASE_START_X,     GROUND_BASE_START_Y,	   TILE_W,				 TILE_H					},	// 1
-		{ FLOWER_FEATURE_START_X,  FLOWER_FEATURE_START_Y, SMALL_TILE_FEATURE_H, SMALL_TILE_FEATURE_W	},	// 2
-		{ TREE_FEATURE_START_X,	   TREE_FEATURE_START_Y,   LARGE_TILE_FEATURE_H, LARGE_TILE_FEATURE_W	},	// 3
+
+	inline static constexpr Sprite SPRITES[]
+	{																										// SpriteID s:
+		{ SPRITE_X,			       SPRITE_Y,			   SPRITE_W,			 SPRITE_H				},	// 0 Sprite
+		{ GROUND_BASE_START_X,     GROUND_BASE_START_Y,	   TILE_W,				 TILE_H					},	// 1 GroundTileBaseStart
+		{ FLOWER_FEATURE_START_X,  FLOWER_FEATURE_START_Y, SMALL_TILE_FEATURE_H, SMALL_TILE_FEATURE_W	},	// 2 FlowerTileFeatureStart
+		{ TREE_FEATURE_START_X,	   TREE_FEATURE_START_Y,   LARGE_TILE_FEATURE_H, LARGE_TILE_FEATURE_W	},	// 3 TreeTileFeature
+		{ PLAYER_START_X,		   PLAYER_START_Y,		   PLAYER_START_W,		 PLAYER_START_H			},	// 4 Player
 	};
-	
+
 	static constexpr uint16_t NUM_SPRITES{ sizeof(SPRITES) / sizeof(Sprite) };
 
-public:
-	enum class SpriteID
+	//inline static SpriteData spriteData[NUM_SPRITES];
+
+private:
+	inline static constexpr int NUM_STANDARD_ANIMATION_KEY_FRAMES{ 4 };
+
+private:
+	// imagine the first 4 frames of the player's animation are an array, from left to right
+	// the first frame is them walking south, then north, then two frames of them walking east
+	static inline constexpr Direction STANDARD_ANIMATION_DIRECTIONS[NUM_STANDARD_ANIMATION_KEY_FRAMES]
 	{
-		Sprite,					// 0
-		GroundTileBaseStart,	// 1
-		FlowerTileFeatureStart,	// 2
-		TreeTileFeatureStart,	// 3
+		Direction::South,
+		Direction::North,
+		Direction::East,
+		Direction::East
+	};
+
+	// on the south and north, or [0] and [1] frames, the keyframe/sprite doesnt change, it just flips
+	// however on [2] and [3], to changes, so here is an array expresing the relation between each
+	// keyframe in the animation "set" and which frames progress into which frames
+	static inline constexpr int STANDARD_ANIMATION_PROGRESSION[NUM_STANDARD_ANIMATION_KEY_FRAMES]
+	{
+		0,		// 0	self referenching	(flips)
+		1,		// 1	self referencing	(flips)
+		3,		// 2	
+		2		// 3
+	};
+
+	static inline constexpr AnimatedSpriteData ANIMATED_SPRITES[]
+	{																// AnimatedSpriteID s:
+		{ AnimationType::Standard, SpriteID::PlayerStart, 0.3f }	// 0 Player
 	};
 
 private:
@@ -101,26 +156,72 @@ private:
 public:
 	SpriteSheet(const std::string& fileName);
 
-	inline static constexpr Sprite getSprite(const SpriteSheet::SpriteID s)
+	// renderer's main methods
+	static constexpr Sprite getSprite(const SpriteID s)
 	{
-		return SPRITES[static_cast<uint8_t>(s)];
+		return SPRITES[static_cast<int>(s)];
+	}
+
+	//inline const SpriteData& getSpriteData(const SpriteID id) const { return spriteData[static_cast<int>(id)]; }
+
+	static constexpr AnimatedSpriteData getAnimatedSpriteData(const AnimatedSpriteID asID)
+	{
+		return ANIMATED_SPRITES[static_cast<int>(asID)];
 	}
 	
 	// returns 2 bit pixel at index of xy coord
-	inline const uint8_t getPixel(const uint16_t x, const uint16_t y, const uint8_t i) const
+	const uint8_t getPixel(const uint16_t x, const uint16_t y, const uint8_t i) const
 	{
 		const int index{ x + (y * SHEET_WIDTH) };
 		return (this->data[index] & (DETERMINING_BITS >> (i * PIXEL_BIT_DEPTH))) >> (((PIXELS_PER_BYTE - 1) - i) * PIXEL_BIT_DEPTH);
 	}
 
-	inline const uint8_t* const getData() const					{ return this->data;				 }
+	const uint8_t* const getData() const				{ return this->data;				 }
 
-	inline static constexpr uint16_t getHeight()				{ return SHEET_HEIGHT;				 }
-	inline static constexpr uint16_t getWidth()					{ return SHEET_WIDTH;				 }
-	inline static constexpr uint8_t getPixelsPerByte()			{ return PIXELS_PER_BYTE;			 }
+	static constexpr uint16_t getHeight()				{ return SHEET_HEIGHT;				 }
+	static constexpr uint16_t getWidth()				{ return SHEET_WIDTH;				 }
+	static constexpr uint8_t getPixelsPerByte()			{ return PIXELS_PER_BYTE;			 }
 
-	inline static constexpr Vec2i getTileCenterOffset()			{ return TILE_CENTER_OFFSET;		 }
-	inline static constexpr Vec2i getTileBaseFlavorOffset()		{ return TILE_BASE_FLAVOR_OFFSET;	 }
-	inline static constexpr Vec2i getTileFeatureFlavorOffset()	{ return TILE_FEATURE_FLAVOR_OFFSET; }
+	// misc util sprite methods
+	static constexpr Vec2i getSpriteDimensions(const SpriteID id)
+	{
+		const Sprite& s{ getSprite(id) };
+		return Vec2i{ s.w, s.h };
+	}
+	static constexpr Vec2i getSpriteCoords(const SpriteID id)
+	{
+		const Sprite& s{ getSprite(id) };
+		return Vec2i{ s.x, s.y };
+	}
 
+	// renderer's tile related methods
+	static constexpr int getTileLength()				{ return TILE_W;					 }
+
+	static constexpr Vec2i getTileCenterOffset()		{ return TILE_CENTER_OFFSET;		 }
+	static constexpr Vec2i getTileBaseFlavorOffset()	{ return TILE_BASE_FLAVOR_OFFSET;	 }
+	static constexpr Vec2i getTileFeatureFlavorOffset()	{ return TILE_FEATURE_FLAVOR_OFFSET; }
+
+	// renderer's animation related methods
+	static constexpr int getNumStandardAnimationKeyFrames()				  { return NUM_STANDARD_ANIMATION_KEY_FRAMES;		  }
+
+	static constexpr Direction getStandardAnimationDirection(const int i) { return STANDARD_ANIMATION_DIRECTIONS[i];		  }
+	static constexpr int getStandardAnimationProgression(const int i)	  { return STANDARD_ANIMATION_PROGRESSION[i];		  }
+
+	static constexpr int getStandardAnimationDirectionIndex(const Direction dir)
+	{
+		for (int i = 0; i < NUM_STANDARD_ANIMATION_KEY_FRAMES; ++i)
+		{
+			if (STANDARD_ANIMATION_DIRECTIONS[i] == dir)
+				return i;
+			else if (i != STANDARD_ANIMATION_PROGRESSION[i])
+				return i;
+		}
+	}
+
+	static constexpr bool getStandardAnimationOrientation(const Direction dir, const int index)
+	{
+		return (STANDARD_ANIMATION_DIRECTIONS[index] == dir);
+	}
+
+	static constexpr bool isStandardAnimationFrameLooping(const int i)	  { return getStandardAnimationProgression(i) == i;   }
 };

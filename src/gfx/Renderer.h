@@ -20,6 +20,8 @@ struct Chunk;
 class World;
 class Tile;
 
+class Entity;
+
 enum class DetailedDirection;
 
 enum class RenderFlag
@@ -63,15 +65,17 @@ public:
 	void render
 	(
 		const SpriteSheet& sheet,
-		const SpriteSheet::SpriteID id,
+		const SpriteID id,
 		const Vec2i& coords,
 		const ColorPalette& cp,
 		const RenderFlag rf = RenderFlag::NONE,
-		const Vec2i & displacement = Vec2i{0, 0}
+		const Vec2i& displacement = Vec2i{ 0, 0 }
 	);
 
 	void render(const SpriteSheet& sheet, const World& world);
 	void render(const SpriteSheet& sheet, const Level& level);
+
+	void render(const SpriteSheet& sheet, const Entity& entity);
 
 	// put a pixel on the image buffer
 	void putPixel(const uint16_t i, const Color c);
