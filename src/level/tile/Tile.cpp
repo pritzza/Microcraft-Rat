@@ -4,14 +4,24 @@
 
 void Tile::update(const double time)
 {
-	const TileBaseData& base{ TileBases::getBase(baseID) };
-	const TileFeatureData& feature{ TileFeatures::getFeature(featureID) };
+	AnimatedSprite& baseSprite{ base.sprite };
+	AnimatedSprite& featureSprite{ feature.sprite };
 
-	// we're assigning this hundreds of times each frame which prolly aint the best idea
-	// ideally only do this once per tileBaseID
-	if(base.animationTickRate != 0)
-		flavorBaseAnimationOffset.setValue(time / base.animationTickRate);
+	if (baseSprite.isAnimated())
+		baseSprite.update(time, base.getData().isGlobalAnimation);
+	
+	if (featureSprite.isAnimated())
+		featureSprite.update(time, feature.getData().isGlobalAnimation);
+}
 
-	if (feature.animationTickRate != 0)
-		flavorFeatureAnimationOffset.setValue(time / feature.animationTickRate);
+void Tile::setBase(const TileBase::ID id)
+{
+	base.id = id;
+	base.sprite.setID(base.getData().animatedSpriteID);
+}
+
+void Tile::setFeature(const TileFeature::ID id)
+{
+	feature.id = id;
+	feature.sprite.setID(feature.getData().animatedSpriteID);
 }

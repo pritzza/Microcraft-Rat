@@ -11,13 +11,6 @@
 // to use a not operator otherwise i would've gotten an unexpected output
 // and would have never suspected this...
 
-SpriteSheet::SpriteSheet(const std::string& fileName)
-	:
-	data{}
-{
-	this->loadFromFile(fileName);
-}
-
 void SpriteSheet::loadFromFile(const std::string& fileName)
 {
 	sf::Image spriteSheetBuffer;

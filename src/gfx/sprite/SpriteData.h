@@ -17,7 +17,7 @@ struct SpriteData
 		w{w},
 		h{h},
 		spriteDataSize{ w * h },
-		spriteData{ std::make_unique<uint8_t[]>(spriteDataSize)}
+		spriteData{ std::make_unique<uint8_t[]>(spriteDataSize) }
 	{}
 
 };

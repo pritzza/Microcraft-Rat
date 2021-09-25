@@ -6,8 +6,10 @@
 #include <cstdint>
 #include <limits>
 
+#include <queue>
+
 #include "color/Color.h"
-#include "sprite/SpriteSheet.h"
+#include "sheet/SpriteSheet.h"
 
 #include "Camera.h"
 
@@ -24,12 +26,23 @@ class Entity;
 
 enum class DetailedDirection;
 
+enum class SpriteID;
+
 enum class RenderFlag
 {
 	NONE = 0b00,
 	FLIP_X = 0b01,
 	FLIP_Y = 0b10,
 	FLIP_BOTH = FLIP_X | FLIP_Y
+};
+
+struct SpriteRenderArgs
+{
+	const SpriteID id;
+	const Vec2i coords;
+	const ColorPalette& cp;
+	const RenderFlag rf = RenderFlag::NONE;
+	const Vec2i displacement = Vec2i{ 0, 0 };
 };
 
 class Renderer
@@ -41,6 +54,8 @@ private:
 private:
 	sf::Image buffer;
 
+	std::queue<SpriteRenderArgs> renderingQueue;
+
 	const uint16_t bufferWidth;
 	const uint16_t bufferHeight;
 	const uint16_t bufferSize;
@@ -51,31 +66,26 @@ private:
 	// but we could also just not and figure out colors at runtime
 	std::array<Color, PALETTE_SIZE> colorPalette;
 
+	const SpriteSheet& sheet;
+
 private:
 	void generateColorPalette();	// 6 for loops for each color channel
 
-	// functions for render(world)
-	const Vec2i getTileComponentSpritePosition(const Vec2i& chunkCoord, const int tileIndex, const int tileComponentIndex) const;
-	const Vec2i getTileBaseCropOffset(const DetailedDirection& dir, const Tile& tile, const int compIndex, const Vec2i& flavorCropOffset) const;
+	void renderTileBase(const Tile& tile, const int compIndex, const Vec2i& spritePos, const World& world, const Vec2i& chunkCoords, const int tileIndex);
+	void renderTileFeature(const Tile& tile, const int compIndex, const Vec2i& spritePos, const int spriteLen, const bool hasFeature);
+
+	void render(const SpriteRenderArgs& args);
 
 public:
-	Renderer(const uint16_t width, const uint16_t height);
+	Renderer(const SpriteSheet& sheet, const uint16_t width, const uint16_t height);
 
-	// for rendering any ol' static sprite
-	void render
-	(
-		const SpriteSheet& sheet,
-		const SpriteID id,
-		const Vec2i& coords,
-		const ColorPalette& cp,
-		const RenderFlag rf = RenderFlag::NONE,
-		const Vec2i& displacement = Vec2i{ 0, 0 }
-	);
+	void render(const World& world);
+	void render(const Level& level);
 
-	void render(const SpriteSheet& sheet, const World& world);
-	void render(const SpriteSheet& sheet, const Level& level);
+	void render(const Entity& entity);
 
-	void render(const SpriteSheet& sheet, const Entity& entity);
+	// actually renders everything in the renderingQueue. Must be called for anything to appear
+	void renderQueue();
 
 	// put a pixel on the image buffer
 	void putPixel(const uint16_t i, const Color c);

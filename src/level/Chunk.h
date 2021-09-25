@@ -26,27 +26,11 @@ public:
 public:
 	Chunk(const int seed = 0);
 
-	// setters
-	void setTile(const uint16_t i, const Tile& t)						{ tiles[i] = t;							  						  }
-	void setTile(const Vec2i& coords, const Tile& t)					{ tiles[Vec2i::toIndex(coords, LENGTH, LENGTH)] = t;			  }
-
-	void setTileBase(const uint16_t i, const TileBases::ID id)			{ tiles[i].baseID = id;											  }
-	void setTileBase(const Vec2i& coords, const TileBases::ID id)		{ tiles[Vec2i::toIndex(coords, LENGTH, LENGTH)].baseID = id;      }
-
-	void setTileFeature(const uint16_t i, const TileFeatures::ID id)	{ tiles[i].featureID = id;										  }
-	void setTileFeature(const Vec2i& coords, const TileFeatures::ID id) { tiles[Vec2i::toIndex(coords, LENGTH, LENGTH)].featureID = id;	  }
-
 	// getters
 	Tile& getTile(const uint16_t i)										{ return tiles[i];							  					  }
 	Tile& getTile(const Vec2i& coords)									{ return tiles[Vec2i::toIndex(coords, LENGTH, LENGTH)];			  }
 	const Tile& getTile(const uint16_t i) const							{ return tiles[i];							  					  }
 	const Tile& getTile(const Vec2i& coords) const						{ return tiles[Vec2i::toIndex(coords, LENGTH, LENGTH)];			  }
-
-	const TileBases::ID getTileBaseID(const uint16_t i) const			{ return tiles[i].baseID;										  }
-	const TileBases::ID getTileBaseID(const Vec2i& coords) const		{ return tiles[Vec2i::toIndex(coords, LENGTH, LENGTH)].baseID;    }
-
-	const TileFeatures::ID getTileFeatureID(const uint16_t i) const		{ return tiles[i].featureID;									  }
-	const TileFeatures::ID getTileFeatureID(const Vec2i& coords) const	{ return tiles[Vec2i::toIndex(coords, LENGTH, LENGTH)].featureID; }
 
 	inline static constexpr int getLength() { return LENGTH; }
 	inline static constexpr int getSize()	{ return SIZE;	 }
@@ -54,7 +38,7 @@ public:
 	// returns length of chunk in pixels
 	inline static constexpr int getPixelLength() 
 	{
-		return LENGTH * TileData::DIMENSION * SpriteSheet::getTileLength();
+		return LENGTH * TileData::DIMENSION * SpriteSheetData::getTileLength();
 	}
 
 	// returns bounding box of chunk

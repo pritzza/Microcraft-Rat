@@ -1,11 +1,10 @@
 #pragma once
 
-#include "../../gfx/sprite/SpriteSheet.h"
+#include "../../gfx/sheet/SpriteSheetAnimationData.h"
 #include "../../gfx/color/ColorPalette.h"
 
 // TileData is a data structure that stores data that every
-// Base and Decoration will inherit from
-// every TileBase and TileFeature
+// every TileBase and TileFeature will inherit from
 struct TileData
 {
 public:
@@ -13,14 +12,14 @@ public:
 	static constexpr int NUM_COMPONENTS{ DIMENSION * DIMENSION };
 
 public:
-	SpriteID spriteID;
+	AnimatedSpriteID animatedSpriteID;
 	ColorPalette colorPalette;
 
 private:
-	TileData(const SpriteID spriteID, const ColorPalette colorPalette)
+	TileData(const AnimatedSpriteID animatedSpriteID, const ColorPalette colorPalette)
 		:
-		spriteID{spriteID},
-		colorPalette{colorPalette}
+		animatedSpriteID{ animatedSpriteID },
+		colorPalette{ colorPalette }
 	{}
 
 	friend struct TileBaseData;

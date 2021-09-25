@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-class SpriteSheet;
+class SpriteSheetData;
 
 // a sprite is merely a struct that describes the position
 // and dimensions of a region of pixels in the sprite sheet
@@ -23,5 +23,5 @@ private:
 		h{ h }
 	{}
 
-	friend class SpriteSheet;
+	friend class SpriteSheetData;
 };

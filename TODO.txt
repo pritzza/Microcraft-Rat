@@ -1,4 +1,11 @@
 TODO:
+
+CTRL + SHIFT + F to look for TODOs that i'm missing here
+
+~ [in progress]
++ [done]
+x [not needed anymore]
+
 ~ sprite animations
 ~ terrain generation
 ~ level/world class
@@ -12,23 +19,24 @@ art
 + make World::chunks unorderedmap compatible with my Vec2i
 + fix Random
 + create a constant length for all tile sprites in SH
-add some sort of culling to camera
++ add some sort of culling to camera
 maybe make an optimization where you only draw the pixels that changed from the last frame
 + fix bug of sprite height not being able to go past 2 units
 + refactor Tile and Tiles so its less confusing
 + write cropped Render::render() method
-add a const SpriteSheet& member to renderer
++ add a const SpriteSheet& member to renderer
 + write Chunk::getTileCrop
 + fix World::getTilePos() and World::getChunkPos()
 add dt based gamespeed stuff
-fix horrendous lag
++ fix horrendous lag
 fix timer
 minimap
 + fix centerChunk stuff in World's chunk loading
-optimize tile rendering by storing tile sprite directions in memory
+x optimize tile rendering by storing tile sprite directions in memory
 + move TileFlavors to be inside of SpriteSheet, or atleast make more sense
-flesh out DeltaTime's bench marking capabilities
-optimize:
++ flesh out DeltaTime's bench marking capabilities
+x optimize:
 	return to aarons idea of storing each sprite in its own 2d array
 	port to OpenGL
 	multithread
+tile feature directions

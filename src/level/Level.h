@@ -1,18 +1,20 @@
 #pragma once
 
 #include "World.h"
+#include "generation/WorldGenerator.h"
 
 class Camera;
 
 class Level
 {
 private:
-	World world;
-
+	WorldGenerator worldGenerator{ 0, 0, 0 };
+	World world{ worldGenerator };
+	
 public:
-	Level(const Vec2i windowDimensions);
+	// TODO make constructor for different "types" of worlds, like surface, underground, etc
 
 	void update(const double dt, const Camera& camera);
 
-	inline const World& getWorld() const { return this->world; }
+	const World& getWorld() const { return this->world; }
 };

@@ -5,22 +5,25 @@
 struct TileBaseData : public TileData
 {
 public:
-	bool hasFlavors;
-	bool isFluid;
-
-	double animationTickRate;	// rate at which the flavor is incrimented (if it has one) in seconds
+	const bool hasFlavors;
+	const bool isFluid;
+	const bool canSpriteFlipHorizontally;
+	const bool isGlobalAnimation;
 
 private:
-	TileBaseData(const SpriteID spriteID, const ColorPalette colorPalette, 
-		const double animationTickRate,
+	TileBaseData(const AnimatedSpriteID animatedSpriteID, const ColorPalette colorPalette, 
 		const bool hasFlavors,
-		const bool isFluid)
+		const bool isFluid,
+		const bool canSpriteFlipHorizontally,
+		const bool isGlobalAnimation
+	)
 		:
-		TileData{ spriteID, colorPalette },
-		animationTickRate{ animationTickRate },
+		TileData{ animatedSpriteID, colorPalette },
 		hasFlavors{ hasFlavors },
-		isFluid{ isFluid }
+		isFluid{ isFluid },
+		canSpriteFlipHorizontally{ canSpriteFlipHorizontally },
+		isGlobalAnimation{ isGlobalAnimation }
 	{}
 
-	friend struct TileBases;	// Tiles is the only place where Tile should be made
+	friend struct TileBase;	// Tiles is the only place where Tile should be made
 };

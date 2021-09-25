@@ -1,30 +1,27 @@
 #pragma once
 
-#include "TileBases.h"
-#include "TileFeatures.h"
-#include "TileFlavor.h"
-
-#include "../../util/Direction.h"
+#include "TileBase.h"
+#include "TileFeature.h"
 
 // what is actually stored in each chunk to make up the world
 class Tile
 {
-public:
-	TileBases::ID baseID{ TileBases::ID::Grass };
-	TileFeatures::ID featureID{ TileFeatures::ID::None };
-
-	// say a flower only takes the top right tile component
-	// meanwhile a tree would take up all the components
-	bool featurePlacement[TileData::NUM_COMPONENTS]{ false };
-
-	// storing dir doesnt work because there are 4 dirs that need to be stored
-	DetailedDirection directions[TileData::NUM_COMPONENTS]{ DetailedDirection::Center };
-
-	TileFlavor flavors[TileData::NUM_COMPONENTS];
-	TileFlavor flavorBaseAnimationOffset;
-	TileFlavor flavorFeatureAnimationOffset;
+private:
+	TileBase base{ TileBase::ID::Grass };
+	TileFeature feature{ TileFeature::ID::None };
 
 public:
 	void update(const double time);
+
+	const bool hasFeature() const { return !feature.isEmpty(); }
+
+	void setBase(const TileBase::ID id);
+	void setFeature(const TileFeature::ID id);
+
+	const TileBase& getBase() const			{ return base;		}
+	const TileFeature& getFeature() const	{ return feature;	}
+
+	TileBase& getBase()			{ return base;		}
+	TileFeature& getFeature()	{ return feature;	}
 
 };

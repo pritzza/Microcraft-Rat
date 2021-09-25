@@ -1,9 +1,11 @@
 #include "Game.h"
 
 #include "gfx/color/ColorPalette.h"
+#include "gfx/sheet/SpriteSheetAnimationData.h"
+#include "entity/Entity.h"
 
 #include <iostream>
-#include "entity/Entity.h"
+
 Game::Game(
 	const uint16_t width,
 	const uint16_t height,
@@ -12,8 +14,7 @@ Game::Game(
 	const int windowStyle)
 	:
 	window{ width, height, name, windowStyle },
-	renderer{ width, height },
-	level{ Vec2i{ width, height } },
+	renderer{ sheet, width, height },
 	keyboard{ window.getWindow() },
 	frameRate{ frameRate },
 	isRunning{ false }
@@ -21,10 +22,14 @@ Game::Game(
 
 void Game::loop()
 {
-	DeltaTime levelRenderTimer;
 	DeltaTime levelUpdateTimer;
+	DeltaTime levelRenderTimer;
 
-	Entity e{ SpriteSheet::getAnimatedSpriteData(AnimatedSpriteID::Player) };
+	DeltaTime entityRenderTimer;
+
+	DeltaTime renderTimer;
+
+	Entity e{ AnimatedSpriteID::Player, ColorPalette( -1, 333, 444, 555 ) };
 
 	while (isRunning)
 	{
@@ -47,13 +52,12 @@ void Game::loop()
 				if (keyboard.d.isDown())
 					e.move({ 1,0 });
 
-
 				// update
 				
 				//levelUpdateTimer.start();
 				this->level.update(delta.getDT(), renderer.getCamera());
 				//levelUpdateTimer.stop();
-				//std::cout << "level update: " << levelUpdateTimer.getPT() << '\n';
+				//std::cout << "level update: " << levelUpdateTimer.getTotalPT() / delta.getTotalPT() << '\n';
 
 				e.update(delta.getDT());
 				renderer.getCamera().centerOn(e.getCenterPos());
@@ -62,13 +66,22 @@ void Game::loop()
 				//renderer.testPalette();
 
 				//levelRenderTimer.start();
-				renderer.render(this->sheet, this->level);
+				renderer.render(this->level);
 				//levelRenderTimer.stop();
-				//std::cout << "level render: " << levelRenderTimer.getPT() << '\n';
+				//std::cout << "level render: " << levelRenderTimer.getTotalPT() / delta.getTotalPT() << '\n';
 
-				renderer.render(this->sheet, e);
 
-				renderer.render(this->sheet, SpriteID::Sprite, Vec2i{69, 69}, ColorPalette(renderer, 224, true));
+				//entityRenderTimer.start();
+				renderer.render(e);
+				//entityRenderTimer.stop();
+				//std::cout << "entity render: " << entityRenderTimer.getTotalPT() / delta.getTotalPT() << '\n';
+
+				//renderer.render(this->sheet, SpriteID::Sprite, Vec2i{69, 69}, ColorPalette(renderer, 224, true));
+
+				//renderTimer.start();
+				renderer.renderQueue();
+				//renderTimer.stop();
+				//std::cout << "render: " << renderTimer.getTotalPT() / delta.getTotalPT() << '\n';
 
 				window.render(renderer.getBuffer());
 			}
@@ -76,7 +89,7 @@ void Game::loop()
 		else
 			stop();
 
-		std::cout << delta.getFPS() << '\n';
+		std::cout << "\rFPS: " << delta.getFPS() << ", " << delta.getTotalPT() / delta.getTotalTime() << '\n';
 
 		delta.wait(this->frameRate);
 	}

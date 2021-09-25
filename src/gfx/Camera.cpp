@@ -22,12 +22,12 @@ const bool Camera::isInView(const Sprite& s) const
 
 const bool Camera::isInView(const AABB& s) const
 {
-	const int rw{ renderer.getBufferWidth() / 2 };
-	const int rh{ renderer.getBufferHeight() / 2 };
+	const int rw{ renderer.getBufferWidth()  };
+	const int rh{ renderer.getBufferHeight() };
 
-	const AABB fieldOfView{ pos.x - rw, pos.y - rh, pos.x + rw, pos.y + rh };
+	const AABB fieldOfView{ pos.x, pos.y, rw, rh };
 
-	return AABB::collide(fieldOfView, s);
+	return AABB::collide(s, fieldOfView);
 }
 
 const Vec2i Camera::getDimensions() const

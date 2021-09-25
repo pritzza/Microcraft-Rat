@@ -9,11 +9,6 @@
 
 #include <iostream>
 
-ColorPalette::ColorPalette()
-	:
-	colors{ {} }	// 0 initialize array
-{}
-
 ColorPalette::ColorPalette(const uint16_t ci1, const uint16_t ci2, const uint16_t ci3, const uint16_t ci4)
 {
 	this->setColors(ci1, ci2, ci3, ci4);
@@ -71,9 +66,9 @@ void ColorPalette::setColor(const uint8_t ci, const uint16_t color)
 const uint8_t ColorPalette::parseIntColorToIndex(const uint16_t color) const
 {
 	// if color is above 999 or -1 (unsigned underflow), it means its transparent
-	static constexpr uint16_t TRANSPARENT_THRESHOLD{ 1000 };
+	static constexpr uint16_t TRANSPARENT_THRESHOLD = -1;
 
-	const bool	  a = color >= TRANSPARENT_THRESHOLD;
+	const bool	  a = color == TRANSPARENT_THRESHOLD;
 
 	const uint8_t r = Math::clamp( ((color % 1000) / 100), Color::getMinValue(), Color::getMaxValue());
 	const uint8_t g = Math::clamp( ((color % 100 ) / 10 ), Color::getMinValue(), Color::getMaxValue());

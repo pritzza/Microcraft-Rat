@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-#include "../sprite/SpriteSheet.h"
+#include "../sheet/SpriteSheet.h"
 
 class Renderer;
 
@@ -26,7 +26,7 @@ private:
 	const uint8_t parseIntColorToIndex(const uint16_t color) const;
 
 public:
-	ColorPalette();
+	ColorPalette() = default;
 
 	// takes in colors in integer form, meaning base Color::MAX_VALUE (5) notation
 	// eg: if you wanted to represent R:5, G:2, B:3, you would simply do 523. For transparency, do -1 or >999

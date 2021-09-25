@@ -38,6 +38,8 @@ public:
 	static constexpr int NUM_DET_DIRECTIONS{ 9 };
 	static constexpr int SQRT_NUM_DET_DIRS{ 3 };
 
+	static constexpr Direction DEFAULT_DIR{ Direction::North };
+
 public:
 	static constexpr Vec2i toVector(const Direction dir)
 	{
@@ -48,6 +50,9 @@ public:
 		case 2: return Vec2i{  1,  0 };		// Right/East
 		case 3: return Vec2i{ -1,  0 };		// Left/West
 		}
+
+		__assume(false);
+		return { 0,0 };	// should never return
 	}
 
 	static constexpr Vec2i toVector(const DetailedDirection dir)
@@ -64,6 +69,9 @@ public:
 		case DetailedDirection::South:		return {  0,  1 };
 		case DetailedDirection::SouthEast:	return {  1,  1 };
 		}
+
+		__assume(false);
+		return { 0,0 };	// should never return
 	}
 
 	static constexpr DetailedDirection toDetailedDirection(const Vec2i vec)
@@ -83,6 +91,9 @@ public:
 		case Direction::East:  return Direction::West;
 		case Direction::West:  return Direction::East;
 		}
+
+		__assume(false);
+		return Direction::North;
 	}
 
 	static constexpr DetailedDirection opposite(const DetailedDirection d)

@@ -6,29 +6,34 @@ struct TileFeatureData : public TileData
 {
 public:
 	bool hasFlavors;
+
 	bool isSolid;
 	bool isPlaceableOnEdges;
 	bool isSmall;		// isnt very dynamic, but features can basically only be 1x1 or 2x2 tile components large so far
+	bool canSpriteFlipHorizontally;
+	const bool isGlobalAnimation;
+
 	//int height
 	// Tool toolToBreak;
 
-	double animationTickRate;	// rate at which the flavor is incrimented (if it has one) in seconds
-
 private:
-	TileFeatureData(const SpriteID spriteID, const ColorPalette colorPalette,
-		const double animationTickRate,
+	TileFeatureData(const AnimatedSpriteID animatedSpriteID, const ColorPalette colorPalette,
 		const bool hasFlavors,
 		const bool isSolid,
 		const bool isPlaceableOnEdges,
-		const bool isSmall)
+		const bool isSmall,
+		const bool canSpriteFlipHorizontally,
+		const bool isGlobalAnimation
+	)
 		:
-		TileData{ spriteID, colorPalette },
-		animationTickRate{ animationTickRate },
+		TileData{ animatedSpriteID, colorPalette },
 		hasFlavors{ hasFlavors },
 		isSolid{ isSolid },
 		isPlaceableOnEdges{ isPlaceableOnEdges },
-		isSmall{ isSmall }
+		isSmall{ isSmall },
+		canSpriteFlipHorizontally{ canSpriteFlipHorizontally },
+		isGlobalAnimation{ isGlobalAnimation }
 	{}
 
-	friend struct TileFeatures;	// Tiles is the only place where Tile should be made
+	friend struct TileFeature;	// Tiles is the only place where Tile should be made
 };

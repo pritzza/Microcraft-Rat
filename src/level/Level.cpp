@@ -2,12 +2,7 @@
 
 #include "../gfx/Camera.h"
 
-Level::Level(const Vec2i windowDimensions)
-	:
-	world{0,0}
-{}
-
 void Level::update(const double dt, const Camera& camera)
 {
-	this->world.update(dt, camera);
+	world.update(dt, camera);
 }
