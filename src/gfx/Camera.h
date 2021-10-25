@@ -16,7 +16,7 @@ public:
 	Camera(const Renderer& renderer);
 
 	void centerOn(const Vec2i& point);
-	void centerOn(const Vec2i& point, const Vec2i& minPos, const Vec2i& maxPos);
+	void centerOn(const Vec2i& point, const Vec2i& minPos, const Vec2i& maxPos);	// TODO
 
 	const bool isInView(const Sprite& s) const;
 	const bool isInView(const AABB& s) const;

@@ -22,6 +22,11 @@ private:
 		colorPalette{ colorPalette }
 	{}
 
+	// TileData should only be apart of Tile___Data classes
 	friend struct TileBaseData;
 	friend struct TileFeatureData;
+
+	// Also needs to be constructed in Tile___ for tilebases and tilefeatures
+	friend struct TileBase;
+	friend struct TileFeature;
 };

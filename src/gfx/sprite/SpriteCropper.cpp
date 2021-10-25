@@ -7,8 +7,6 @@
 #include "../../level/tile/Tile.h"
 #include "../../level/World.h"
 
-#include <iostream>
-
 const Vec2i SpriteCropper::getTileBaseOffset(const Tile& tile, const int compIndex, const World& world, const Vec2i& chunkCoords, const int tileIndex) const
 {
 	static constexpr int TILE_LEN{ SpriteSheetData::getTileLength() };
@@ -17,17 +15,17 @@ const Vec2i SpriteCropper::getTileBaseOffset(const Tile& tile, const int compInd
 
 	const DetailedDirection tileDirection{ tileBase.directions[compIndex] };
 
-	const TileFlavor animatedFlavor{ 
-		tileBase.flavors[compIndex].getValue() + tileBase.sprite.getCurrentFrame(),
-		tileBase.flavors[compIndex].isFlavored() || tileBase.sprite.isAnimated()
-	};
+	const int flavorValue{ tileBase.flavors[compIndex].getValue() + tileBase.sprite.getCurrentFrame() };
+	const bool isBaseFlavored{ (tileBase.flavors[compIndex].isFlavored() || tileBase.sprite.isAnimated()) && flavorValue };
+
+	const TileFlavor animatedFlavor{ flavorValue, isBaseFlavored };
 
 	// determines whether tile component should be cropped to have a flavor or a direction of a tile
 	const bool cropTileBaseForFlavor
 	{
-		tileDirection == DetailedDirection::Center &&	// is a center tile
-		animatedFlavor.isFlavored() &&					// has a flavor value
-		tileBase.getData().hasFlavors					// tileBase supports flavors
+		tileDirection == DetailedDirection::Center &&			// is a center tile
+		animatedFlavor.isFlavored() &&							// has a flavor value
+		tileBase.getData().hasFlavors							// tileBase supports flavors
 	};
 
 	// if the tile base has a flavor
@@ -35,11 +33,14 @@ const Vec2i SpriteCropper::getTileBaseOffset(const Tile& tile, const int compInd
 	{
 		const Vec2i baseFlavorCropOffset{ Vec2i::toVector(animatedFlavor.getValue(), TileFlavor::DIMENSION, TileFlavor::DIMENSION) };
 
-		return (SpriteSheetData::getTileBaseFlavorOffset() + baseFlavorCropOffset)            * TILE_LEN;
+		// position of flavor sprite on spritesheet
+		const Vec2i& baseFlavorSpritePos{ SpriteSheetData::getSpriteCoords(tileBase.getData().flavorSpriteID) };
+
+		return baseFlavorSpritePos + baseFlavorCropOffset * TILE_LEN * Sprite::STANDARD_LENGTH;
 	}
 	else
 		// otherwise, just give the crop based on the tile's direction
-		return (Directions::toVector(tileDirection) + SpriteSheetData::getTileCenterOffset()) * TILE_LEN;
+		return (Directions::toVector(tileDirection) + SpriteSheetData::getTileCenterOffset()) * TILE_LEN * Sprite::STANDARD_LENGTH;
 }
 
 const Vec2i SpriteCropper::getTileFeatureOffset(const Tile& tile, const int compIndex, const int featureSpriteLen) const
@@ -47,9 +48,10 @@ const Vec2i SpriteCropper::getTileFeatureOffset(const Tile& tile, const int comp
 	const TileFeature& tileFeature{ tile.getFeature() };
 	const AnimatedSprite& sprite{ tileFeature.sprite };
 
+	// TODO proof check
 	const TileFlavor animatedFlavor{
-		tileFeature.flavors[compIndex].getValue() + tileFeature.sprite.getCurrentFrame(),
-		tileFeature.flavors[compIndex].isFlavored() || tileFeature.sprite.isAnimated()
+		tileFeature.flavors[compIndex].getValue()   +  tileFeature.sprite.getCurrentFrame(),
+		tileFeature.flavors[compIndex].isFlavored() || tileFeature.sprite.isAnimated() 
 	};
 
 	const bool isFeatureFlavored{ tileFeature.getData().hasFlavors };

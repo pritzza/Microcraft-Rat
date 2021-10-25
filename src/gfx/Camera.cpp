@@ -17,7 +17,7 @@ void Camera::centerOn(const Vec2i& point)
 
 const bool Camera::isInView(const Sprite& s) const
 {
-	return this->isInView( AABB{ s.x, s.y, s.w, s.h } );
+	return this->isInView( AABB{ s.pos.x, s.pos.y, s.dim.x, s.dim.y } );
 }
 
 const bool Camera::isInView(const AABB& s) const

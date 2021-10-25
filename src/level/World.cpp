@@ -40,14 +40,14 @@ void World::loadSurroundingChunks(const Camera& camera, const int loadDistance)
 	for (int x = 0; x < chunksLoaded.x; ++x)
 		for (int y = 0; y < chunksLoaded.y; ++y)
 		{
-			const Vec2i inRangeChunkCoords
+			const Vec2i surroundingChunkCoords
 			{
 				(centerChunk.x - (chunksLoaded.x / 2)) + x,
 				(centerChunk.y - (chunksLoaded.y / 2)) + y + (camPos.y % chunkLen > chunkLen / 2)	// to accomidate the closer chunk
 			};
 
-			if (chunks.find(inRangeChunkCoords) == chunks.end())
-				loadChunk(inRangeChunkCoords);
+			if (chunks.find(surroundingChunkCoords) == chunks.end())
+				loadChunk(surroundingChunkCoords);
 		}
 }
 
@@ -151,18 +151,19 @@ const Vec2i World::getTilePos(const Vec2i& tilePos, const Vec2i& tileOffset) con
 
 const Vec2i World::getTileComponentPixelPos(const Vec2i& chunkCoord, const int tileIndex, const int tileComponentIndex) const
 {
+		static constexpr int SPRITE_LEN{ Sprite::STANDARD_LENGTH };
 		static constexpr int TILE_LEN{ SpriteSheetData::getTileLength() };
 		static constexpr int TILE_DIM{ TileData::DIMENSION };
 		static constexpr int CHUNK_LEN{ Chunk::getLength() };
 
 		// positional offset from chunk to chunk
-		const Vec2i chunkOffset{ chunkCoord * CHUNK_LEN * TILE_LEN * TILE_DIM };
+		const Vec2i chunkOffset{ chunkCoord * CHUNK_LEN * TILE_DIM * TILE_LEN * SPRITE_LEN };
 
 		// positional offset from tile to tile
-		const Vec2i tileOffset{ Vec2i::toVector(tileIndex, CHUNK_LEN, CHUNK_LEN) * TILE_LEN * TILE_DIM };
+		const Vec2i tileOffset{ Vec2i::toVector(tileIndex, CHUNK_LEN, CHUNK_LEN) * TILE_DIM * TILE_LEN * SPRITE_LEN };
 
 		// positional offset from tile sprite to tile sprite (tile is made up for 4 sprites)
-		const Vec2i tileSpriteOffset{ Vec2i::toVector(tileComponentIndex, TILE_DIM, TILE_DIM) * TILE_LEN };
+		const Vec2i tileSpriteOffset{ Vec2i::toVector(tileComponentIndex, TILE_DIM, TILE_DIM) * TILE_LEN * SPRITE_LEN };
 
 		// final position
 		return Vec2i{ chunkOffset + tileOffset + tileSpriteOffset };

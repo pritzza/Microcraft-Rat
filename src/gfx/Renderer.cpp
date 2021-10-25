@@ -45,14 +45,20 @@ void Renderer::render(const SpriteRenderArgs& args)
 	static constexpr int PIXELS_PER_BYTE{ SpriteSheet::getPixelsPerByte() };
 	const uint8_t* const colorPaletteColorsStart{ args.cp.getColors() };
 
+	const unsigned int numPixels = s.dim.x * s.dim.y;
+
+	// numPixels elements with value of arg2
+	std::vector<Vec2i> pixelPositions( numPixels, Vec2i{0,0} );
+	std::vector<uint8_t> pixelColors( numPixels, 0 );
+
 	// xy is offset of where sprite is being drawn on the buffer
 	// ixy is the coord of the spritesheet pixel iterator
-	for (int iy = 0; iy < s.h; ++iy)
-		for (int ix = 0; ix < s.w; ++ix)
+	for (int iy = 0; iy < s.dim.y; ++iy)
+		for (int ix = 0; ix < s.dim.x; ++ix)
 		{
 			// current pixel's spritesheet x y pos
-			const int shx{ ((xFlip ? ((s.x + s.w) - (ix + 1)) : s.x + ix) + args.displacement.x) / PIXELS_PER_BYTE };
-			const int shy{ (yFlip ? ((s.y + s.h) - (iy + 1)) : s.y + iy) + args.displacement.y };
+			const int shx{ ((xFlip ? ((s.pos.x + s.dim.x) - (ix + 1)) : s.pos.x + ix) + args.displacement.x) / PIXELS_PER_BYTE };
+			const int shy{ (yFlip ? ((s.pos.y + s.dim.y) - (iy + 1)) : s.pos.y + iy) + args.displacement.y };
 
 			const Vec2i& placingPixelPositon{ (args.coords + Vec2i{ ix, iy }) - cameraPos };
 
@@ -65,12 +71,15 @@ void Renderer::render(const SpriteRenderArgs& args)
 				preFlipPixelIndex
 			};
 
-			this->putPixel(
-				placingPixelPositon,
-				*(colorPaletteColorsStart + (sheet.getPixel(shx, shy, pixelIndex)))
-				// can multiply/divide skx and sky to scale
-			);
+			// we'll try to calculate all pixels data
+			pixelPositions[ix + (iy * s.dim.x)] = placingPixelPositon;
+			pixelColors[ix + (iy * s.dim.x)] = *(colorPaletteColorsStart + (sheet.getPixel(shx, shy, pixelIndex)));
+			// can multiply/divide skx and sky to scale
 		}
+
+	// then "batch render" all pixels
+	for (int i = 0; i < numPixels; ++i)
+		putPixel(pixelPositions[i], pixelColors[i]);
 }
 
 void Renderer::render(const World& world)
@@ -195,7 +204,7 @@ void Renderer::render(const Entity& entity)
 	const Sprite& sprite{ SpriteSheetData::getSprite(spriteID) };
 
 	const RenderFlag rf{ animatedSprite.getRenderFlags() };
-	const Vec2i crop{ animatedSprite.getFrameIndex() * sprite.w, 0 };
+	const Vec2i crop{ animatedSprite.getFrameIndex() * sprite.dim.x, 0 };
 
 	this->renderingQueue.push({ spriteID, entity.getPos(), entity.getPalette(), rf, crop });
 }
@@ -217,7 +226,7 @@ void Renderer::generateColorPalette()
 	this->colorPalette[TRANSPARENT_COLOR_INDEX].makeTransparent();
 }
 
-void Renderer::putPixel(const uint16_t i, const Color c)
+void Renderer::putPixel(const uint16_t i, const Color& c)
 {
 	const Vec2i pos{ Vec2i::toVector(i, bufferWidth, bufferHeight) };
 
@@ -234,7 +243,7 @@ void Renderer::putPixel(const Vec2i& coords, const uint8_t colorIndex)
 	this->putPixel(coords, this->colorPalette[colorIndex]);
 }
 
-void Renderer::putPixel(const Vec2i& coords, const Color c)
+void Renderer::putPixel(const Vec2i& coords, const Color& c)
 {
 	if (!c.isTransparent() && AABB::isPointInside(coords.x, coords.y, 0, 0, bufferWidth - 1, bufferHeight - 1))
 	{
@@ -242,13 +251,15 @@ void Renderer::putPixel(const Vec2i& coords, const Color c)
 		static constexpr uint8_t COLOR_SCALING_FACTOR{ NORMAL_COLOR_MAX / Color::getColorRange() };
 
 		// normalize each color channel from Color::MIN_VAL-Color::MAX_VAL to 0-255
-		const uint8_t r = c.getRed() * COLOR_SCALING_FACTOR;
-		const uint8_t g = c.getGreen() * COLOR_SCALING_FACTOR;
-		const uint8_t b = c.getBlue() * COLOR_SCALING_FACTOR;
+		const sf::Color rgb(
+			c.getRed()   * COLOR_SCALING_FACTOR,	// red
+			c.getGreen() * COLOR_SCALING_FACTOR,	// green
+			c.getBlue()  * COLOR_SCALING_FACTOR		// blue
+		);
 
 		// the renderer's buffer contains the pixel data that is going on the screen
 		// so here is where we are actually telling which pixel goes on the screen
-		this->buffer.setPixel(coords.x, coords.y, sf::Color{ r, g, b });
+		this->buffer.setPixel(coords.x, coords.y, rgb);
 	}
 }
 

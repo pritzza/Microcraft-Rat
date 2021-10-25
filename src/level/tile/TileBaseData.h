@@ -5,20 +5,24 @@
 struct TileBaseData : public TileData
 {
 public:
-	const bool hasFlavors;
-	const bool isFluid;
-	const bool canSpriteFlipHorizontally;
-	const bool isGlobalAnimation;
+	SpriteID flavorSpriteID;
+	bool hasFlavors;
+
+	bool isFluid;
+	bool canSpriteFlipHorizontally;
+	bool isGlobalAnimation;
 
 private:
-	TileBaseData(const AnimatedSpriteID animatedSpriteID, const ColorPalette colorPalette, 
+	TileBaseData(const TileData& tileData,
+		const SpriteID flavorSpiteID,
 		const bool hasFlavors,
 		const bool isFluid,
 		const bool canSpriteFlipHorizontally,
 		const bool isGlobalAnimation
 	)
 		:
-		TileData{ animatedSpriteID, colorPalette },
+		TileData{ tileData },
+		flavorSpriteID{ flavorSpriteID },
 		hasFlavors{ hasFlavors },
 		isFluid{ isFluid },
 		canSpriteFlipHorizontally{ canSpriteFlipHorizontally },

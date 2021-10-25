@@ -42,13 +42,13 @@ private:
 	inline static constexpr AnimatedSpriteData ANIMATED_SPRITES[static_cast<int>(AnimatedSpriteID::NumAnimatedSpriteIDs)]
 	{
 		// type of animation, actual sprite ID, frame duration								// AnimatedSpriteID s:
-		{ AnimationType::Standard,				SpriteID::PlayerStart,				0.3f },	// 0 Player
-		{ AnimationType::None,					SpriteID::GroundTileBaseStart,		0.0f },	// 1 UnAnimatedTileBase
-		{ AnimationType::StandardTileBase,		SpriteID::GroundTileBaseStart,		1.0f }, // 2 Water
-		{ AnimationType::None,					SpriteID::PlayerStart,				0.0f }, // 3 EmptyTileFeature
-		{ AnimationType::StandardTileFeature,	SpriteID::FlowerTileFeatureStart,	0.0f }, // 4 StaticFlower
-		{ AnimationType::StandardTileFeature,	SpriteID::FlowerTileFeatureStart,	0.2f }, // 4 DancingFlower
-		{ AnimationType::None,					SpriteID::TreeTileFeatureStart,		0.0f }, // 5 Tree
+		{ AnimationType::Standard,				SpriteID::Player,				0.3f },	// 0 Player
+		{ AnimationType::None,					SpriteID::GroundTileBase,		0.0f },	// 1 UnAnimatedTileBase
+		{ AnimationType::StandardTileBase,		SpriteID::GroundTileBase,		1.0f }, // 2 Water
+		{ AnimationType::None,					SpriteID::Player,				0.0f }, // 3 EmptyTileFeature
+		{ AnimationType::StandardTileFeature,	SpriteID::FlowerTileFeature,	0.0f }, // 4 StaticFlower
+		{ AnimationType::StandardTileFeature,	SpriteID::FlowerTileFeature,	0.2f }, // 4 DancingFlower
+		{ AnimationType::None,					SpriteID::TreeTileFeature,		0.0f }, // 5 Tree
 	};
 	
 	// lil abbreviations

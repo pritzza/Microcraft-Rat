@@ -8,7 +8,7 @@ class Camera;
 class Level
 {
 private:
-	WorldGenerator worldGenerator{ 0, 0, 0 };
+	WorldGenerator worldGenerator{ 0, 1, 2 };
 	World world{ worldGenerator };
 	
 public:

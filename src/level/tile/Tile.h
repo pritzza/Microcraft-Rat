@@ -21,7 +21,6 @@ public:
 	const TileBase& getBase() const			{ return base;		}
 	const TileFeature& getFeature() const	{ return feature;	}
 
-	TileBase& getBase()			{ return base;		}
-	TileFeature& getFeature()	{ return feature;	}
-
+	TileBase& getBase()						{ return base;		}
+	TileFeature& getFeature()				{ return feature;	}
 };

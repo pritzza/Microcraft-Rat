@@ -38,7 +38,7 @@ public:
 	// returns length of chunk in pixels
 	inline static constexpr int getPixelLength() 
 	{
-		return LENGTH * TileData::DIMENSION * SpriteSheetData::getTileLength();
+		return LENGTH * TileData::DIMENSION * SpriteSheetData::getTileLength() * Sprite::STANDARD_LENGTH;
 	}
 
 	// returns bounding box of chunk

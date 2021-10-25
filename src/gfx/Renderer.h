@@ -88,9 +88,9 @@ public:
 	void renderQueue();
 
 	// put a pixel on the image buffer
-	void putPixel(const uint16_t i, const Color c);
+	void putPixel(const uint16_t i, const Color& c);
 	void putPixel(const uint16_t i, const uint8_t colorIndex);
-	void putPixel(const Vec2i& coords, const Color c);
+	void putPixel(const Vec2i& coords, const Color& c);
 	void putPixel(const Vec2i& coords, const uint8_t colorIndex);
 
 	void testPalette();

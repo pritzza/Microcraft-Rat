@@ -25,10 +25,10 @@ public:
 private:
 	inline static const TileFeatureData tileFeatures[static_cast<int>(ID::NumFeatures)]
 	{
-		//	AnimatedSpriteID, ColorPalette, hasFlavor, isSolid, isPlaceableOnEdges, isSmall, canSpriteFlipHorizontally
-		{ AnimatedSpriteID::EmptyTileFeature,	ColorPalette(  0,   0,   0,   0 ), false, false, false, false, false, true },	// none   0
-		{ AnimatedSpriteID::DancingFlower,		ColorPalette( -1, 223, 445, 550 ), true,  false, false, true , true,  true },	// flower 1
-		{ AnimatedSpriteID::Tree,				ColorPalette( -1, 321, 121, 131 ), false, false, true,  false, false, true },	// tree   2
+		// AnimatedSpriteID, ColorPalette, hasFlavor, isSolid, isPlaceableOnEdges, isSmall, canSpriteFlipHorizontally, canPartiallyOccupyComponents
+		{ TileData{ AnimatedSpriteID::EmptyTileFeature, ColorPalette(  0,   0,   0,   0 ) }, false, false, false, false, false, false, false },	// none   0
+		{ TileData{ AnimatedSpriteID::DancingFlower,	ColorPalette( -1, 223, 445, 550 ) }, true,  false, false, true , true,  true,  true  },	// flower 1
+		{ TileData{ AnimatedSpriteID::Tree,				ColorPalette( -1, 321, 121, 131 ) }, false, false, true,  false, false, false, false },	// tree   2
 	};
 
 public:
