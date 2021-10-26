@@ -12,13 +12,17 @@ public:
 	static constexpr int NUM_COMPONENTS{ DIMENSION * DIMENSION };
 
 public:
-	AnimatedSpriteID animatedSpriteID;
+	AnimatedSpriteID borderAnimatedSpriteID;
+	AnimatedSpriteID flavorAnimatedSpriteID;
 	ColorPalette colorPalette;
 
 private:
-	TileData(const AnimatedSpriteID animatedSpriteID, const ColorPalette colorPalette)
+	TileData(const AnimatedSpriteID borderAnimatedSpriteID, 
+		const AnimatedSpriteID flavorAnimatedSpriteID,
+		const ColorPalette colorPalette)
 		:
-		animatedSpriteID{ animatedSpriteID },
+		borderAnimatedSpriteID{ borderAnimatedSpriteID },
+		flavorAnimatedSpriteID{ flavorAnimatedSpriteID },
 		colorPalette{ colorPalette }
 	{}
 

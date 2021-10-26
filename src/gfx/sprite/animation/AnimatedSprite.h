@@ -15,7 +15,7 @@ struct Vec2i;
 struct AnimatedSprite
 {
 private:
-	AnimatedSpriteID spriteID;
+	AnimatedSpriteID animatedSpriteID;
 
 	Direction currentDir{ Directions::DEFAULT_DIR };
 
@@ -26,7 +26,7 @@ private:
 public:
 	AnimatedSprite(const AnimatedSpriteID spriteID)
 		:
-		spriteID{ spriteID }
+		animatedSpriteID{ spriteID }
 	{}
 
 	void update(const double dt, const bool usingUniversalTimer = false);
@@ -43,6 +43,7 @@ public:
 	const int getFrameIndex() const;
 	const AnimatedSpriteData& getSpriteData() const;
 	const AnimationFrameData& getFrameData() const;
+	const Vec2i getAnimationBounds() const;
 
 	const int getCurrentFrame() const				{ return currentFrame;	}
 	const Direction getDirection() const			{ return currentDir;	}

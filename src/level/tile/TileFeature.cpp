@@ -3,5 +3,6 @@
 TileFeature::TileFeature(const ID id)
 	:
 	id{ id },
-	sprite{ getData().animatedSpriteID }
+	borderSprite{ getData().borderAnimatedSpriteID },
+	flavorSprite{ getData().flavorAnimatedSpriteID }
 {}

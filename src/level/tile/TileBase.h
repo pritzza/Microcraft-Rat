@@ -1,7 +1,6 @@
 #pragma once
 
 #include "TileBaseData.h"
-#include "TileFlavor.h"
 
 struct TileBase
 {
@@ -17,23 +16,31 @@ public:
 	};
 
 	ID id;
-	AnimatedSprite sprite;
+	AnimatedSprite borderSprite;	// store sprite for tile borders
+	AnimatedSprite flavorSprite;	// store sprite for tile flavors (non border)
 
 	DetailedDirection directions[TileData::NUM_COMPONENTS] = { DetailedDirection::Center };
-	TileFlavor flavors[TileData::NUM_COMPONENTS] = { true, true, true, true };	// show flavor on all components by default
+
+	// TODO generate this during world gen, currently UB
+	unsigned int randomNums[TileData::NUM_COMPONENTS]; // used for flavoring and other random stuff
 
 private:
 	// would be cool to make these constexpr somehow
 	inline static const TileBaseData tileBases[static_cast<int>(ID::NumTiles)]
 	{
-		//	TileData{ AnimatedSpriteID, SpriteID, ColorPalette }, hasFlavor, isFluid, canSpriteFlipHorizontally
-		{ TileData{ AnimatedSpriteID::UnAnimatedGroundTileBase, ColorPalette{ 433, 121, 232, 242 } }, SpriteID::GroundTileBaseFeature, true, false, true,  true },	// grass 0
-		{ TileData{ AnimatedSpriteID::UnAnimatedGroundTileBase, ColorPalette{ 433, 222, 333, 444 } }, SpriteID::GroundTileBaseFeature, true, false, false, true },	// stone 1
-		{ TileData{ AnimatedSpriteID::Water,					ColorPalette{ 433, 114, 225, 335 } }, SpriteID::GroundTileBaseFeature, true, true , false, true }	// water 2
+	//    TileData{ BorderAnimatedSpriteID, FlavorAnimatedSpriteID, ColorPalette }, hasFlavor, isFluid, canSpriteFlipHorizontally
+		{ TileData{ AnimatedSpriteID::UnAnimatedGroundTileBase, AnimatedSpriteID::UnAnimatedGroundFlavor,	ColorPalette{ 433, 121, 232, 242 } }, true, false, true,  true },	// grass 0
+		{ TileData{ AnimatedSpriteID::UnAnimatedGroundTileBase, AnimatedSpriteID::UnAnimatedGroundFlavor,	ColorPalette{ 433, 222, 333, 444 } }, true, false, false, true },	// stone 1
+		{ TileData{ AnimatedSpriteID::UnAnimatedGroundTileBase,	AnimatedSpriteID::Water,					ColorPalette{ 433, 114, 225, 335 } }, true, true , false, true }	// water 2
 	};
 
 public:
 	TileBase(const ID id);
+
+	bool isComponentBorder(const int compIndex) const 
+	{
+		return directions[compIndex] != DetailedDirection::Center; 
+	}
 
 	const TileBaseData& getData() const 
 	{

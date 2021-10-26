@@ -102,7 +102,7 @@ void Renderer::render(const World& world)
 				const Tile& tile{ chunk.getTile(tileIndex) };
 
 				const bool tileHasFeature{ tile.hasFeature() };
-				const int tileFeatureSpriteLength{ tile.getFeature().sprite.getDimensions().x };
+				const int tileFeatureSpriteLength{ tile.getFeature().flavorSprite.getDimensions().x };
 
 				// tileComponentIndex, go in reverse so large sprites (like tree) dont get overlapped/overwritten by tiles or other things
 				for (int compIndex = TileData::NUM_COMPONENTS - 1; compIndex >= 0; --compIndex)
@@ -141,7 +141,13 @@ void Renderer::renderTileBase(
 	{
 		const TileBase& tileBase{ tile.getBase() };
 
-		const SpriteID sprite{ tileBase.sprite.getSpriteData().spriteID };
+		SpriteID sprite;
+
+		if (tile.getBase().directions[compIndex] == DetailedDirection::Center)
+			sprite = tileBase.flavorSprite.getSpriteData().spriteID;
+		else
+			sprite = tileBase.borderSprite.getSpriteData().spriteID;		
+
 		const ColorPalette& colorPalette{ tileBase.getData().colorPalette };
 		const Vec2i cropOffset{ sc.getTileBaseOffset(tile, compIndex, world, chunkCoords, tileIndex) };
 
@@ -172,9 +178,17 @@ void Renderer::renderTileFeature(const Tile& tile, const int compIndex, const Ve
 
 		if (drawOnComponent)
 		{
-			const SpriteID sprite{ tileFeature.sprite.getSpriteData().spriteID };
+			SpriteID sprite;
+
+			if (tile.getFeature().directions[compIndex] == DetailedDirection::Center)
+				sprite = tileFeature.flavorSprite.getSpriteData().spriteID;
+			else
+				sprite = tileFeature.borderSprite.getSpriteData().spriteID;
+
 			const ColorPalette& colorPalette{ tileFeature.getData().colorPalette };
+
 			const Vec2i cropOffset{ sc.getTileFeatureOffset(tile, compIndex, spriteLen) };
+			//const Vec2i cropOffset{ 0,0 };
 
 			this->renderingQueue.push({ sprite, spritePos, colorPalette, RenderFlag::NONE, cropOffset });
 		}

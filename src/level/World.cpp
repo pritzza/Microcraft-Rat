@@ -85,8 +85,7 @@ void World::updateTileDirections(const Vec2i& chunkCoord)
 				for (int i = 0; i < TileData::NUM_COMPONENTS; ++i)
 				{
 					tile.getBase().directions[i] = this->getTileDirection(chunkCoord, tileCoord, i);
-					// TODO: tileDirection for features
-					//tile.base.directions[i] = this->getTileDirection(chunkCoord, tileCoord, i);
+					tile.getFeature().directions[i] = this->getTileDirection(chunkCoord, tileCoord, i);
 				}
 			}
 	}
@@ -169,30 +168,38 @@ const Vec2i World::getTileComponentPixelPos(const Vec2i& chunkCoord, const int t
 		return Vec2i{ chunkOffset + tileOffset + tileSpriteOffset };
 }
 
-const DetailedDirection World::getTileDirection(const Vec2i& chunkPos, const Vec2i& tilePos, const int tileSpriteIndex) const
+const DetailedDirection World::getTileDirection(const Vec2i& chunkPos, const Vec2i& tilePos, const int compIndex) const
 {
-	// if the chunk containing the tile isnt loaded, return this TileCrop
-	static constexpr DetailedDirection DEFAULT_TILE_CROP{ DetailedDirection::Center };
-
 	DetailedDirection direction{ DetailedDirection::Center };
 
 	const TileBase::ID baseTileID{ chunks.at(chunkPos).getTile(tilePos).getBase().id };
 
 	static constexpr int TILE_DIM{ TileData::DIMENSION };
 
+		// what we do here is the check the 4 tiles adjacent to this one
+		// if an adjacent tile has the same id, we subtract it
+		// eg, if the tile north and east are the save, subtract north (0, -1), and east(1, 0)
+		// you end up with a tile who's direction is southwest(1,1)
+
+		// O is the tile we're checking, X is same type adjacent, you can see it should be bottomleft/southwest
+		//
+		//		X
+		//		OX
+
 	// * 2 so its its always between 0-2 and -1 so it becomes just 1's and -1's
-	const Vec2i subTileSpriteOffset{ (Vec2i::toVector(tileSpriteIndex, TILE_DIM, TILE_DIM) * 2) - 1 };
+	const Vec2i tileCompOffset{ (Vec2i::toVector(compIndex, TILE_DIM, TILE_DIM) * 2) - 1 };
 
 	// we only care about the tiles directly above, below, left, and right of the checking tile
 	for (int i = 0; i < Directions::NUM_DIRECTIONS; ++i)
 	{
 		const Vec2i adjacentTileDirection{ Directions::toVector(static_cast<Direction>(i)) };
 
-		const Vec2i offset{ (adjacentTileDirection + subTileSpriteOffset) / 2 };
+		const Vec2i offset{ (adjacentTileDirection + tileCompOffset) / TileData::DIMENSION };
 
 		const Vec2i adjacentTilesChunkPos{ this->getChunkPos(chunkPos, tilePos, offset) };
 		const Vec2i adjacentTilesPos{ this->getTilePos(tilePos, offset) };
 
+		// check adjacent tile components
 		if (
 			this->chunks.find(adjacentTilesChunkPos) != this->chunks.end() &&
 			baseTileID == chunks.at(adjacentTilesChunkPos).getTile(adjacentTilesPos).getBase().id
@@ -201,5 +208,4 @@ const DetailedDirection World::getTileDirection(const Vec2i& chunkPos, const Vec
 	}
 
 	return direction;
-	
 }

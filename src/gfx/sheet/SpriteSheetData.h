@@ -13,7 +13,7 @@ enum class SpriteID
 	FlowerTileFeature,		// 2
 	TreeTileFeature,		// 3
 	Player,					// 4
-	GroundTileBaseFeature,	// 5
+	GroundTileBaseFlavors,	// 5
 };
 
 class SpriteSheetData
@@ -42,7 +42,7 @@ class SpriteSheetData
 		{	{ 4 * S_LEN,	 9  * S_LEN },		TILE_DIM,						TILE_FEATURE_BOUNDS		},	// 2 FlowerTileFeatureStart
 		{	{ 6 * S_LEN,	 12 * S_LEN },		{ 2 * S_LEN,	2 * S_LEN },	{ 1, 1 }				},	// 3 TreeTileFeature
 		{	{ 0 * S_LEN,	 0  * S_LEN },		{ 2 * S_LEN,	2 * S_LEN },	PLAYER_BOUNDS			},	// 4 Player
-		{	{ 0 * S_LEN,	 7  * S_LEN },		TILE_DIM,						TILE_FEATURE_BOUNDS		},	// 5 GroundTileBaseFeature
+		{	{ 0 * S_LEN,	 7  * S_LEN },		TILE_DIM,						TILE_FEATURE_BOUNDS		},	// 5 GroundTileBaseFlavors
 	};
 
 	static constexpr uint16_t NUM_SPRITES{ sizeof(SPRITES) / sizeof(Sprite) };
@@ -64,6 +64,10 @@ public:
 	static constexpr Vec2i getSpriteCoords(const SpriteID id)
 	{
 		return getSprite(id).pos;
+	}
+	static constexpr Vec2i getSpriteSheetBounds(const SpriteID id)
+	{
+		return getSprite(id).sheetBounds;
 	}
 
 	// tile related methods

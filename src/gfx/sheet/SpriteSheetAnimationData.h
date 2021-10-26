@@ -21,6 +21,8 @@ enum class AnimatedSpriteID
 	DancingFlower,				// 5
 	Tree,						// 6
 
+	UnAnimatedGroundFlavor,		// 7
+
 	NumAnimatedSpriteIDs
 };
 
@@ -41,14 +43,15 @@ class SpriteSheetAnimationData
 private:
 	inline static constexpr AnimatedSpriteData ANIMATED_SPRITES[static_cast<int>(AnimatedSpriteID::NumAnimatedSpriteIDs)]
 	{
-		// type of animation, actual sprite ID, frame duration								// AnimatedSpriteID s:
-		{ AnimationType::Standard,				SpriteID::Player,				0.3f },	// 0 Player
-		{ AnimationType::None,					SpriteID::GroundTileBase,		0.0f },	// 1 UnAnimatedTileBase
-		{ AnimationType::StandardTileBase,		SpriteID::GroundTileBase,		1.0f }, // 2 Water
-		{ AnimationType::None,					SpriteID::Player,				0.0f }, // 3 EmptyTileFeature
-		{ AnimationType::StandardTileFeature,	SpriteID::FlowerTileFeature,	0.0f }, // 4 StaticFlower
-		{ AnimationType::StandardTileFeature,	SpriteID::FlowerTileFeature,	0.2f }, // 4 DancingFlower
-		{ AnimationType::None,					SpriteID::TreeTileFeature,		0.0f }, // 5 Tree
+		// type of animation, actual sprite ID, frame duration								// AnimatedSpriteIDs:
+		{ AnimationType::Standard,				SpriteID::Player,					0.3f },	// 0 Player
+		{ AnimationType::None,					SpriteID::GroundTileBase,			0.0f },	// 1 UnAnimatedTileBase
+		{ AnimationType::StandardTileBase,		SpriteID::GroundTileBaseFlavors,	1.0f }, // 2 Water
+		{ AnimationType::None,					SpriteID::Player,					0.0f }, // 3 EmptyTileFeature
+		{ AnimationType::StandardTileFeature,	SpriteID::FlowerTileFeature,		0.0f }, // 4 StaticFlower
+		{ AnimationType::StandardTileFeature,	SpriteID::FlowerTileFeature,		0.2f }, // 5 DancingFlower
+		{ AnimationType::None,					SpriteID::TreeTileFeature,			0.0f }, // 6 Tree
+		{ AnimationType::None,					SpriteID::GroundTileBaseFlavors,	0.0f }, // 7 UnAnimatedGroundFlavor
 	};
 	
 	// lil abbreviations
@@ -72,7 +75,8 @@ private:
 
 		{ {{0, O}},			 {},				{},					{}					},	// 2 Mono
 
-		{ {{0, O}, {1, O}, {2, O}, {3, O}, {4, O}},					{},	{},	{}			},	// 3 Standard Tile Base
+		// TODO delete one of these
+		{ {{0, O}, {1, O}, {2, O}, {3, O}},							{},	{},	{}			},	// 3 Standard Tile Base
 
 		{ {{0, O}, {1, O}, {2, O}, {3, O}},							{}, {}, {}			},	// 4 Standard Tile Feature
 

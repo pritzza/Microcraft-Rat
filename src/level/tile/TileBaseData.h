@@ -5,7 +5,6 @@
 struct TileBaseData : public TileData
 {
 public:
-	SpriteID flavorSpriteID;
 	bool hasFlavors;
 
 	bool isFluid;
@@ -14,7 +13,6 @@ public:
 
 private:
 	TileBaseData(const TileData& tileData,
-		const SpriteID flavorSpiteID,
 		const bool hasFlavors,
 		const bool isFluid,
 		const bool canSpriteFlipHorizontally,
@@ -22,7 +20,6 @@ private:
 	)
 		:
 		TileData{ tileData },
-		flavorSpriteID{ flavorSpriteID },
 		hasFlavors{ hasFlavors },
 		isFluid{ isFluid },
 		canSpriteFlipHorizontally{ canSpriteFlipHorizontally },

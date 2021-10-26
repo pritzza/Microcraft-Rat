@@ -15,16 +15,16 @@ struct Sprite
 
 	const Vec2i pos;	// pixel position of sprite's top left corner in spritesheet
 	const Vec2i dim;	// dimensions of single sprite in pixels
-	const Vec2i bounds;	// if a sprite is adjecnt to sprites that still represent one thing 
-						// (ie all tile flavors) this is the dimensions of the sprites representing one thing in sprite (2x2 for tile flavors)
+	const Vec2i sheetBounds;	// if a sprite is adjecnt to sprites that still represent one thing 
+								// (ie all tile flavors) this is the dimensions of the sprites representing one thing in sprite (2x2 for tile flavors)
 
 	// a sprite should never be made outside of the Spritesheet class (hence priv ctor and friend)
 private:
-	constexpr Sprite(const Vec2i& pos, const Vec2i& dim, const Vec2i& bounds)
+	constexpr Sprite(const Vec2i& pos, const Vec2i& dim, const Vec2i& sheetBounds)
 		:
 		pos{ pos },
 		dim{ dim },
-		bounds{ dim }
+		sheetBounds{ sheetBounds }
 	{}
 
 	friend class SpriteSheetData;

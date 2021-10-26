@@ -35,7 +35,7 @@ void AnimatedSprite::resetAnimation()
 
 void AnimatedSprite::setID(const AnimatedSpriteID asID)
 {
-	spriteID = asID;
+	animatedSpriteID = asID;
 	resetAnimation();
 }
 
@@ -65,7 +65,7 @@ const int AnimatedSprite::getFrameIndex() const
 
 const AnimatedSpriteData& AnimatedSprite::getSpriteData() const
 {
-	return SpriteSheetAnimationData::getAnimatedSpriteData(spriteID);
+	return SpriteSheetAnimationData::getAnimatedSpriteData(animatedSpriteID);
 }
 
 const AnimationFrameData& AnimatedSprite::getFrameData() const
@@ -73,4 +73,9 @@ const AnimationFrameData& AnimatedSprite::getFrameData() const
 	const AnimatedSpriteData& spriteData{ getSpriteData() };
 
 	return SpriteSheetAnimationData::getAnimationFrameData(spriteData.animationType);
+}
+
+const Vec2i AnimatedSprite::getAnimationBounds() const
+{
+	return SpriteSheetData::getSpriteSheetBounds(getSpriteData().spriteID);
 }

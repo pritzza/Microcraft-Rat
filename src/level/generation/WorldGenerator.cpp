@@ -31,6 +31,10 @@ void WorldGenerator::generateChunk(const Vec2i& chunkCoord, World& world)
 		Tile& tile{ chunk.getTile(tileCoord) };
 
 		tile.setBase(genTileBase(terrainNoise));
+
+		for (int j = 0; j < TileData::NUM_COMPONENTS; ++j)
+			tile.getBase().randomNums[j] = terrainNoise * 69420;
+
 		//tile.setFeature(genTileFeature(featureNoise));
 	}
 }

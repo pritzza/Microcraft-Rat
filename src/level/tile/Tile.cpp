@@ -4,24 +4,29 @@
 
 void Tile::update(const double time)
 {
-	AnimatedSprite& baseSprite{ base.sprite };
-	AnimatedSprite& featureSprite{ feature.sprite };
-
-	if (baseSprite.isAnimated())
-		baseSprite.update(time, base.getData().isGlobalAnimation);
+	// update base sprites
+	if (base.borderSprite.isAnimated())
+		base.borderSprite.update(time, base.getData().isGlobalAnimation);
+	if (base.flavorSprite.isAnimated())
+		base.flavorSprite.update(time, base.getData().isGlobalAnimation);
 	
-	if (featureSprite.isAnimated())
-		featureSprite.update(time, feature.getData().isGlobalAnimation);
+	// update feature sprites
+	if (feature.borderSprite.isAnimated())
+		feature.borderSprite.update(time, feature.getData().isGlobalAnimation);
+	if (feature.flavorSprite.isAnimated())
+		feature.flavorSprite.update(time, feature.getData().isGlobalAnimation);
 }
 
 void Tile::setBase(const TileBase::ID id)
 {
 	base.id = id;
-	base.sprite.setID(base.getData().animatedSpriteID);
+	base.borderSprite.setID(base.getData().borderAnimatedSpriteID);
+	base.flavorSprite.setID(base.getData().flavorAnimatedSpriteID);
 }
 
 void Tile::setFeature(const TileFeature::ID id)
 {
 	feature.id = id;
-	feature.sprite.setID(feature.getData().animatedSpriteID);
+	feature.borderSprite.setID(feature.getData().borderAnimatedSpriteID);
+	feature.flavorSprite.setID(feature.getData().flavorAnimatedSpriteID);
 }
